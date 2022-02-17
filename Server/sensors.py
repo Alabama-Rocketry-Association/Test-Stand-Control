@@ -59,6 +59,7 @@ def read_all():
 
 def read_voltage(data):
     '''Returns the raw voltage value from the sensor'''
+    global SENSORS_AVAILABLE
     SENSORS_AVAILABLE.wait()
     SENSORS_AVAILABLE.clear()
     if data == Data.LOX_PSI:
