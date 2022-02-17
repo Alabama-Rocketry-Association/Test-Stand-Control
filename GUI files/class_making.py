@@ -52,6 +52,7 @@ class Sensor:
             line = line.split(',')  # Splitting the string into parts based off of comma
             # float_line = [float(x) for x in line[1:]]  # Converts the data values into floats (REMOVES TIME STAMP)
             float_value = float(line[self.pos + 1])  # Yoinks the associated psi data value from the csv
+
         return float_value
 
     # This function will read the sensor based off of its type - whether a temperature or a pressure sensor
@@ -156,15 +157,12 @@ class Communication:
             print(self.portName, " it's already closed")
 
     def getData(self):
-        if not self.dummyMode and not self.testMode:  # Pulls data from serial mode if dummy and test not turned on
+        if not self.dummyMode:  # Pulls data from serial mode if dummy and test not turned on
             value = self.ser.readline()  # read line (single value) from the serial port
             decoded_bytes = str(value[0:len(value) - 2].decode("utf-8"))
             # print(decoded_bytes)
             value_chain = decoded_bytes.split(",")
-        elif self.testMode:  # This guy is the test data!! Pump in whatever data YA HEARDDDDDDDD
-            value_chain = [1] + random.sample(range(0, 300), 3) + \
-                [random.getrandbits(1)] + random.sample(range(0, 30), 8)
-            print(value_chain)
+
         else:  # The lovely dummy mode provided standard by the program Jon yoinked
             value_chain = [0] + random.sample(range(0, 300), 1) + \
                 [random.getrandbits(1)] + random.sample(range(0, 20), 8)
@@ -245,9 +243,8 @@ lb.addItem(proxy2)
 Layout.nextRow()
 
 # Altitude graph
-l1 = Layout.addLayout(colspan=20, rowspan=2)
+l1 = Layout.addLayout(colspan=100, rowspan=100)
 l11 = l1.addLayout(rowspan=1, border=(83, 83, 83))
-
 
 # Pressure Graph 1
 press_graph1 = l11.addPlot(title="Pressure Triad # 1 (Helium)")
@@ -259,19 +256,41 @@ press_graph2 = l11.addPlot(title="Pressure Triad # 2 (Ethanol)")
 l1.nextRow()  # Moving the
 l12 = l1.addLayout(rowspan=1, border=(83, 83, 83))
 
-
 # Pressure Graph 2
 press_graph3 = l12.addPlot(title="Pressure Triad # 3 (LOX)")
 
-
 # Temperature graph
 temp_graph = l12.addPlot(title="Temperature (ºc)")
+
+
 
 # Time, battery and free fall graphs
 l2 = Layout.addLayout(border=(83, 83, 83))
 
 
 # Time graph
+l2.nextRow()
+text_graph1 = l2.addPlot(title="Time (min)")
+text_graph1.hideAxis('bottom')
+text_graph1.hideAxis('left')
+text_text1 = pg.TextItem('AAAAAAAAAAAAAAAAAAAAAA', anchor=(0.5, 0.5), color="b")
+text_text1.setFont(font)
+text_text1.setText('YOOOOOOOOOOOOOO')
+text_graph1.addItem(text_text1)
+
+
+
+'''def update_time(sec_total, time_inc):
+    global time_text, sec, mins, hours, time_since_start
+    sec += (time_inc/1000)
+    mins = sec_total // 60
+    sec = sec % 60
+    hours = mins // 60
+    mins = mins % 60
+    time_since_start = "{0}:{1}:{2}".format(int(hours), int(mins), round(sec,1))
+    time_text.setText(time_since_start)
+'''
+l2.nextRow()
 time_graph = l2.addPlot(title="Time (min)")
 time_graph.hideAxis('bottom')
 time_graph.hideAxis('left')
