@@ -33,20 +33,20 @@ class Dev(Enum):
     KER_MOTOR = 2
 
 #Rotates specified motor by specified number of steps
-def rotate(motor, deg_count):
+def rotate(motor, amount_deg):
     global LOX_MOTOR_POS_DEG, KER_MOTOR_POS_DEG
 
-    deg_count = deg_count * GEAR_RATIO
+    motor_rotation_deg = amount_deg * GEAR_RATIO
+    deg_per_step = 1.8
+    step_count = int(motor_rotation_deg / deg_per_step)
 
-    if(abs(deg_count) >= 90):
-        user_message = "Type \'yes\' to confirm %s degrees on device %s" % (deg_count, Dev(motor).name)
+    if(abs(motor_rotation_deg) >= 90):
+        user_message = "Type \'yes\' to confirm %s degrees on device %s" % (motor_rotation_deg, Dev(motor).name)
         if msg.demand(user_message) != 'yes':
             msg.tell("Operation Cancelled")
             return 4
 
-    deg_per_step = 1.8
-    step_count = int(deg_count / deg_per_step)
-    msg.tell(("Rotating %s Motor %s degrees") % (Dev(motor).name, deg_count))
+    msg.tell(("Rotating %s Motor %s degrees") % (Dev(motor).name, amount_deg))
     msg.cmd_ready()
 
     if step_count > 0:
@@ -59,30 +59,30 @@ def rotate(motor, deg_count):
     if motor == Dev.LOX_MOTOR:
         for i in range(step_count):
             if msg.is_stopped():
-                msg.tell("Stopping LOX_MOTOR at position %s degrees" % LOX_MOTOR_POS_DEG)
+                msg.tell("Stopping LOX_MOTOR at position %.2f degrees" % LOX_MOTOR_POS_DEG/GEAR_RATIO)
                 break
             else:
                 motors.stepper1.onestep(direction = dir, style=stepper.SINGLE)
                 LOX_MOTOR_POS_DEG += deg_per_step
                 time.sleep(0.01)
         motors.stepper1.release()
-        msg.tell("Successfully rotated LOX_MOTOR %s degrees" % LOX_MOTOR_POS_DEG)
+        msg.tell("Successfully rotated LOX_MOTOR %.2f degrees" % LOX_MOTOR_POS_DEG/GEAR_RATIO)
 
     elif motor == Dev.KER_MOTOR:
         for i in range(step_count):
             if msg.is_stopped():
-                msg.tell("Stopping KER_MOTOR at position %s degrees" % KER_MOTOR_POS_DEG)
+                msg.tell("Stopping KER_MOTOR at position %.2f degrees" % KER_MOTOR_POS_DEG/GEAR_RATIO)
             motors.stepper2.onestep(direction = dir, style=stepper.SINGLE)
             KER_MOTOR_POS_DEG += deg_per_step
             time.sleep(0.01)
         motors.stepper2.release()
-        msg.tell("Successfully rotated KER_MOTOR %s degrees" % KER_MOTOR_POS_DEG)
+        msg.tell("Successfully rotated KER_MOTOR %.2f degrees" % KER_MOTOR_POS_DEG/GEAR_RATIO)
 
 def lox_motor_pos():
-    msg.tell("LOX Motor rotated %s degrees" % LOX_MOTOR_POS_DEG)
+    msg.tell("LOX Motor rotated %.2f degrees" % LOX_MOTOR_POS_DEG/GEAR_RATIO)
 
 def ker_motor_pos():
-    msg.tell("KEROSENE Motor rotated %s degrees" % KER_MOTOR_POS_DEG)
+    msg.tell("KEROSENE Motor rotated %.2f degrees" % KER_MOTOR_POS_DEG/GEAR_RATIO)
 
 def lox_is():
     rotate(Dev.LOX_MOTOR,10)
