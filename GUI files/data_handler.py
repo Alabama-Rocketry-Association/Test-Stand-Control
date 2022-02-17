@@ -20,4 +20,3 @@ class data_handler:
     def stop(self):
         self.state = False
         print('Stopping data storage in csv at', time.process_time(), 'seconds')
-

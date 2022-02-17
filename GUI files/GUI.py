@@ -1,7 +1,8 @@
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 import numpy as np
-from communication import Communication
+# from communication import Communication
+from class_making import Communication
 import math
 from data_handler import data_handler
 from PyQt5.QtWidgets import QPushButton, QLabel, QLineEdit
@@ -18,10 +19,7 @@ view.show()
 view.setWindowTitle('Performance Characteristics')
 view.resize(1200, 700)
 
-# declare object for serial Communication
-ser = Communication()
-# declare object for storage in CSV
-data_base = data_handler()
+
 # Fonts for text items
 font = QtGui.QFont()
 font.setPixelSize(100)
@@ -44,6 +42,7 @@ Layout.nextRow()
 # Buttons style
 style = "background-color:rgb(158, 27, 50);color:rgb(0,0,0);font-size:14px;"
 
+'''
 # Creating an interactive "save" button. Runs the class from "data_handler" to collect and store in a csv.
 lb = Layout.addLayout(colspan=21)
 proxy = QtGui.QGraphicsProxyWidget()
@@ -61,6 +60,7 @@ end_save_button.setStyleSheet(style)
 end_save_button.clicked.connect(data_base.stop)
 proxy2.setWidget(end_save_button)
 lb.addItem(proxy2)
+'''
 
 Layout.nextRow()
 
