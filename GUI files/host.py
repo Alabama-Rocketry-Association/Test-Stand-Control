@@ -19,10 +19,10 @@ send_socket = context.socket(zmq.PUSH)
 send_socket.connect("tcp://10.0.0.1:5556")
 
 current_date = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-file_name = "data/Differential_Data_" + current_date + ".csv"
+FILE_NAME = "data/Sensor_Data" + current_date + ".csv"
 
 df = pd.DataFrame(columns = ["LOX psi", "KER psi", "PRES psi"])
-df.to_csv(file_name, mode = 'w')
+df.to_csv(FILE_NAME, mode = 'w')
 
 # Queue of all data that will later be sent to the server
 SEND_INFO = queue.Queue()
@@ -83,9 +83,10 @@ def receiver():
 def logger():
     '''Thread which stores all data in the RECEIVED_LOGS
     queue as a csv file'''
+    global FILE_NAME
     while(True):
         data = RECEIVED_LOGS.get()
-        with open(file_name, 'a') as file:
+        with open(FILE_NAME, 'a') as file:
             file.write(data)
             file.close()
 
@@ -113,6 +114,12 @@ def req_status():
     global SEND_INFO
     message = "sta%"
     SEND_INFO.put(message)
+
+def get_file_name():
+    global FILE_NAME
+    '''Gives the name of the file all data is
+    currently being saved to'''
+    return FILE_NAME;
 
 send = threading.Thread(name='sender', target=sender)
 send.start()

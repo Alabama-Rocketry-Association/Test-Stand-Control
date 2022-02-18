@@ -10,6 +10,7 @@ import numpy as np
 import sys
 from time import sleep
 import csv
+import host
 global data_read
 sec_total = 0
 
@@ -58,7 +59,7 @@ if ser.isOpen() or ser.dummyMode() or ser.csvMode():
         data_read = "Dummy"
     elif ser.csvMode():
         data_read = "CSV"
-        csv_file = input("Name of the CSV file: ")
+        csv_file = host.get_file_name()
         try:
             f = open(csv_file, 'rb')
         except OSError:
@@ -75,18 +76,18 @@ else:
 # Example pressure sensor objects and characteristics
 p_sensors1 = {
     'p_sensor1': Sensor('Pressure Sensor 1', 'Pressure', 1, 0, csv_file, data_read),
-    'p_sensor2': Sensor('Pressure Sensor 2', 'Pressure', 1, 1, csv_file, data_read),
-    'p_sensor3': Sensor('Pressure Sensor 3', 'Pressure', 1, 2, csv_file, data_read)
+    # 'p_sensor2': Sensor('Pressure Sensor 2', 'Pressure', 1, 1, csv_file, data_read),
+    # 'p_sensor3': Sensor('Pressure Sensor 3', 'Pressure', 1, 2, csv_file, data_read)
 }
 # Creating a second pressure sensor array
 p_sensors2 = {
-    'p_sensor4': Sensor('Pressure Sensor 4', 'Pressure', 2, 3, csv_file, data_read),
+    'p_sensor4': Sensor('Pressure Sensor 4', 'Pressure', 2, 1, csv_file, data_read),
     #'p_sensor5': Sensor('Pressure Sensor 5', 'Pressure', 2, 4, csv_file, data_read),
     #'p_sensor6': Sensor('Pressure Sensor 6', 'Pressure', 2, 5, csv_file, data_read)
 }
 # Creating a third pressure sensor array
 p_sensors3 = {
-    'p_sensor7': Sensor('Pressure Sensor 7', 'Pressure', 3, 6, csv_file, data_read),
+    'p_sensor7': Sensor('Pressure Sensor 7', 'Pressure', 3, 2, csv_file, data_read),
     #'p_sensor8': Sensor('Pressure Sensor 8', 'Pressure', 3, 7, csv_file, data_read),
     #'p_sensor9': Sensor('Pressure Sensor 9', 'Pressure', 3, 8, csv_file, data_read)
 }

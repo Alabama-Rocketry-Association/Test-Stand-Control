@@ -128,6 +128,7 @@ class Communication:
     ser = serial.Serial()
 
     def __init__(self):
+        '''
         self.baudrate = 9600
         print("The available ports are (if none appear, press any letter): ")
         for port in sorted(self.ports):
@@ -149,6 +150,8 @@ class Communication:
             else:
                 self.dummyPlug = True
                 print("Dummy mode activated.")
+        '''
+        self.csvPlug = True
 
     def close(self):
         if(self.ser.isOpen()):

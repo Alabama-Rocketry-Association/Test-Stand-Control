@@ -79,10 +79,10 @@ def rotate(motor, amount_deg):
         msg.tell("Successfully rotated KER_MOTOR %.2f degrees" % KER_MOTOR_POS_DEG/GEAR_RATIO)
 
 def lox_motor_pos():
-    msg.tell("LOX Motor rotated %.2f degrees" % LOX_MOTOR_POS_DEG/GEAR_RATIO)
+    msg.tell("LOX Motor rotated %.2f degrees" % (LOX_MOTOR_POS_DEG/GEAR_RATIO))
 
 def ker_motor_pos():
-    msg.tell("KEROSENE Motor rotated %.2f degrees" % KER_MOTOR_POS_DEG/GEAR_RATIO)
+    msg.tell("KEROSENE Motor rotated %.2f degrees" % (KER_MOTOR_POS_DEG/GEAR_RATIO))
 
 def lox_is():
     rotate(Dev.LOX_MOTOR,10)
