@@ -2,7 +2,6 @@ import math
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 from data_handler import data_handler
-# from GUI import *
 from class_making import *
 import numpy
 import pandas as pd
@@ -15,6 +14,18 @@ sec_total = 0
 csv_file = ''  # Keep this as an empty string
 data_read = ''
 
+# Deciding whether to 
+
+while True:
+  try:
+    time_increment = int(input("Input GUI update speed (in ms): "))
+    if time_increment <= 50:
+        print("Please input integer above 50 only...") 
+        continue 
+    break
+  except ValueError:
+      print("Please input integer above 50 only...")  
+      continue
 
 import_host = input('Are you attached to the pi? (y/n): ')
 
@@ -26,7 +37,7 @@ if import_host == 'y':
         csv_writter.writerow([0,1,2,3])
     data_read = 'CSV'
 
-elif import_host == 'n':
+else:
     desired_data = input('Enter "csv" to read from csv, enter any entry to switch to dummy data: ')
         
     if desired_data == 'csv' or desired_data == 'CSV':
@@ -53,6 +64,7 @@ def update_graphs(sensors):  # This accepts a dictionary of sensors (created in 
 # A function used to update the GUI - choose what data you want updated
 def update():
     global sec_total
+    global time_increment
     try:
         sec_total += (time_increment / 1000)
         update_time(sec_total, time_increment)  # Include this to update the global time + graph with time increments
@@ -70,10 +82,8 @@ def update():
 '''
     Initialization code -------------------------------------------------------------
 '''
-# press_csv = 'data_example.csv'  # The csv file to read things in from
 
-read_csv = False  # If reading in live data from csv, set this to true
-time_increment = 100  # Amount of time it will take to update the GUI and data collection, measured in ms
+# time_increment = 100  # Amount of time it will take to update the GUI and data collection, measured in ms
 
 # declare object for serial Communication
 # ser = Communication()
@@ -82,28 +92,28 @@ time_increment = 100  # Amount of time it will take to update the GUI and data c
 
 # Example pressure sensor objects and characteristics
 p_sensors1 = {
-    'p_sensor1': Sensor('Pressure Sensor 1', 'Pressure', 1, 0, csv_file, data_read),
-    # 'p_sensor2': Sensor('Pressure Sensor 2', 'Pressure', 1, 1, csv_file, data_read),
-    # 'p_sensor3': Sensor('Pressure Sensor 3', 'Pressure', 1, 2, csv_file, data_read)
+    'p_sensor1': Sensor('Pressure Sensor 1', 'Pressure', 1, 0, csv_file, data_read, time_increment),
+    'p_sensor2': Sensor('Pressure Sensor 2', 'Pressure', 1, 1, csv_file, data_read, time_increment),
+    # 'p_sensor3': Sensor('Pressure Sensor 3', 'Pressure', 1, 2, csv_file, data_read, time_increment)
 }
 # Creating a second pressure sensor array
 p_sensors2 = {
-    'p_sensor4': Sensor('Pressure Sensor 4', 'Pressure', 2, 1, csv_file, data_read),
-    #'p_sensor5': Sensor('Pressure Sensor 5', 'Pressure', 2, 4, csv_file, data_read),
-    #'p_sensor6': Sensor('Pressure Sensor 6', 'Pressure', 2, 5, csv_file, data_read)
+    'p_sensor4': Sensor('Pressure Sensor 4', 'Pressure', 2, 1, csv_file, data_read, time_increment),
+    'p_sensor5': Sensor('Pressure Sensor 5', 'Pressure', 2, 4, csv_file, data_read, time_increment),
+    # 'p_sensor6': Sensor('Pressure Sensor 6', 'Pressure', 2, 5, csv_file, data_read, time_increment)
 }
 # Creating a third pressure sensor array
 p_sensors3 = {
-    'p_sensor7': Sensor('Pressure Sensor 7', 'Pressure', 3, 2, csv_file, data_read),
-    #'p_sensor8': Sensor('Pressure Sensor 8', 'Pressure', 3, 7, csv_file, data_read),
-    #'p_sensor9': Sensor('Pressure Sensor 9', 'Pressure', 3, 8, csv_file, data_read)
+    'p_sensor7': Sensor('Pressure Sensor 7', 'Pressure', 3, 2, csv_file, data_read, time_increment),
+    # 'p_sensor8': Sensor('Pressure Sensor 8', 'Pressure', 3, 7, csv_file, data_read, time_increment),
+    # 'p_sensor9': Sensor('Pressure Sensor 9', 'Pressure', 3, 8, csv_file, data_read, time_increment)
 }
 # Example temperature sensor objects and characteristics
 '''
 t_sensors = {
-    't_sensor1': Sensor('Temperature Sensor 1', 'Temperature', 4, 0, csv_file, data_read),
-    't_sensor2': Sensor('Temperature Sensor 2', 'Temperature', 4, 1, csv_file, data_read),
-    't_sensor3': Sensor('Temperature Sensor 3', 'Temperature', 4, 2, csv_file, data_read)
+    't_sensor1': Sensor('Temperature Sensor 1', 'Temperature', 4, 0, csv_file, data_read, time_increment),
+    't_sensor2': Sensor('Temperature Sensor 2', 'Temperature', 4, 1, csv_file, data_read, time_increment),
+    't_sensor3': Sensor('Temperature Sensor 3', 'Temperature', 4, 2, csv_file, data_read, time_increment)
 }
 '''
 

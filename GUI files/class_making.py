@@ -15,7 +15,8 @@ from data_handler import data_handler
 
 # This class will be used to define all sensors and sensor operations, including graphing
 class Sensor:
-    def __init__(self, input_name, input_type, input_ar_num, input_pos, input_file, input_data_read):
+    def __init__(self, input_name, input_type, input_ar_num, input_pos, input_file, input_data_read, input_time_inc):
+        global time_increment
         self.name = input_name      # The given name of the sensor
         self.type = input_type      # The type of sensor (pressure, temp, etc)
         self.arr = input_ar_num     # Specifies which sensor array the sensor is part of
@@ -24,8 +25,10 @@ class Sensor:
         # self.pin1 = input_pin1      # The second sensor associated pin on the BBB
         self.file = input_file      # The file name associated with the sensor
         self.data_read = input_data_read    # If true, this will read from the csv instead of generating data
+        self.time_inc = input_time_inc  # Setting the update time interval
         self.avg_data = []          # A list that will average the given data
-        self.time = sec_total - 20
+        self.time = sec_total
+        
         
         if self.type == 'Pressure':
             if self.arr == 1:
@@ -36,12 +39,14 @@ class Sensor:
                 self.plot = press_graph3.plot(pen=(56, 152, 242))
             else:
                 print('Error with {}: check that it has an array value of 1-3'.format(self.name))
+        
         elif self.type == 'Temperature':
             self.plot = temp_graph.plot(pen=(102, 252, 241))
+        
         else:
             raise Exception('Error with sensor type, "{}" is not one of the options, in "{}".'.format(self.type, self.name))
 
-        self.data = np.zeros(20, dtype=float)  # An initially empty list used to contain data for plotting
+        self.data = np.zeros(int(20*(1000/self.time_inc)), dtype=float)  # An initially empty list used to contain data for plotting
 
     # This function is used to process csv files from PTs - returns the value corresponding to the psi of this sensor
     def csv_tail(self):
@@ -70,7 +75,7 @@ class Sensor:
             elif self.data_read == 'Dummy':
                 sensor_data = round(random.uniform(100, 300), 2)
             # print("I'm reading temperature")
-            
+
         else:
             print('You should not be able to get to this - pressure class read_sensor method')
         return sensor_data
@@ -79,7 +84,7 @@ class Sensor:
     def graph_update(self, time):
         self.data[:-1] = self.data[1:]
         self.data[-1] = self.read_sensor()
-        time_shifted = time - 20
+        time_shifted = (time)*(1000/self.time_inc) - len(self.data)
         self.plot.setData(self.data)
         self.plot.setPos(time_shifted, 0)
 
@@ -113,73 +118,6 @@ class Valve:
 
     def get_state(self):
         print(self.name, 'is', self.state)
-
-
-# Communication class - looks up local serial ports and tries to connect. If does not work, prompts for test or csv reading
-class Communication:
-    baudrate = ''
-    portName = ''
-    dummyPlug = False
-    # testPlug = False
-    csvPlug = False
-    ports = serial.tools.list_ports.comports()
-    ser = serial.Serial()
-
-    def __init__(self):
-        '''
-        self.baudrate = 9600
-        print("The available ports are (if none appear, press any letter): ")
-        for port in sorted(self.ports):
-            # Yoinking the ports available on the computer: https://stackoverflow.com/a/52809180
-            print(("{}".format(port)))
-        self.portName = input("Write serial port name (ex: /dev/ttyUSB0): ")
-        
-        try:
-            self.ser = serial.Serial(self.portName, self.baudrate)  # Trying to connect to the port and read data
-        except serial.serialutil.SerialException:
-            print("Can't open : ", self.portName)  # Runs if it can't connect to the port, turns dummy mode on
-            print("Enter any letter for dummy data, or 'csv' for csv reading.")
-            print("This will default to dummy data if neither selected.")
-            desired_data = input('Desired Data:')
-        
-            if desired_data == 'csv' or desired_data == 'CSV':
-                self.csvPlug = True
-                print("CSV mode activated.")
-            else:
-                self.dummyPlug = True
-                print("Dummy mode activated.")
-        '''
-        self.csvPlug = True
-
-    def close(self):
-        if(self.ser.isOpen()):
-            self.ser.close()
-        else:
-            print(self.portName, " it's already closed")
-
-    def getData(self):
-        if not self.dummyMode:  # Pulls data from serial mode if dummy and test not turned on
-            value = self.ser.readline()  # read line (single value) from the serial port
-            decoded_bytes = str(value[0:len(value) - 2].decode("utf-8"))
-            # print(decoded_bytes)
-            value_chain = decoded_bytes.split(",")
-
-        else:  # The lovely dummy mode provided standard by the program Jon yoinked
-            value_chain = [0] + random.sample(range(0, 300), 1) + \
-                [random.getrandbits(1)] + random.sample(range(0, 20), 8)
-            print(value_chain)
-
-        return value_chain
-
-
-    def isOpen(self):
-        return self.ser.isOpen()
-
-    def dummyMode(self):
-        return self.dummyPlug
-
-    def csvMode(self):
-        return self.csvPlug
 
 
 '''
