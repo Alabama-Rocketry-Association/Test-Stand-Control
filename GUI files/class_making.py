@@ -29,11 +29,11 @@ class Sensor:
         
         if self.type == 'Pressure':
             if self.arr == 1:
-                self.plot = press_graph1.plot(pen=(102, 252, 241))
+                self.plot = press_graph1.plot(pen=(0, 0, 0))
             elif self.arr == 2:
-                self.plot = press_graph2.plot(pen=(100, 100, 100))
+                self.plot = press_graph2.plot(pen=(205, 58, 27))
             elif self.arr == 3:
-                self.plot = press_graph3.plot(pen=(200, 200, 200))
+                self.plot = press_graph3.plot(pen=(56, 152, 242))
             else:
                 print('Error with {}: check that it has an array value of 1-3'.format(self.name))
         elif self.type == 'Temperature':
@@ -63,16 +63,14 @@ class Sensor:
                 sensor_data = self.csv_tail()
             elif self.data_read == 'Dummy':
                 sensor_data = round(random.uniform(100, 300), 2)
-            elif self.data_read == 'Serial':
-                print('LOLOLOLOLOL THIS SHOULDNT BE SHOWING HOW DID YOU GET SERIAL WORKING')
+
         elif self.type == 'Temperature':
             if self.data_read == 'CSV':
                 sensor_data = self.csv_tail()
             elif self.data_read == 'Dummy':
                 sensor_data = round(random.uniform(100, 300), 2)
-            elif self.data_read == 'Serial':
-                print('LOLOLOLOLOL THIS SHOULDNT BE SHOWING HOW DID YOU GET SERIAL WORKING')
             # print("I'm reading temperature")
+            
         else:
             print('You should not be able to get to this - pressure class read_sensor method')
         return sensor_data

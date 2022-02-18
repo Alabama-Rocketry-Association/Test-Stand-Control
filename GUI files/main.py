@@ -10,9 +10,38 @@ import numpy as np
 import sys
 from time import sleep
 import csv
-import host
 global data_read
 sec_total = 0
+csv_file = ''  # Keep this as an empty string
+data_read = ''
+
+
+import_host = input('Are you attached to the pi? (y/n): ')
+
+if import_host == 'y':
+    import host
+    csv_file = host.get_file_name()
+    with open(csv_file, 'a', newline='') as my_csv_file:
+        csv_writter = csv.writer(my_csv_file)
+        csv_writter.writerow([0,1,2,3])
+    data_read = 'CSV'
+
+elif import_host == 'n':
+    desired_data = input('Enter "csv" to read from csv, enter any entry to switch to dummy data: ')
+        
+    if desired_data == 'csv' or desired_data == 'CSV':
+        csv_file = input('Please enter the name of the csv file: ')
+        try:
+            f = open(csv_file, 'rb')
+        except OSError:
+            print("Could not open/read file:", csv_file)
+            sys.exit()
+        data_read = 'CSV'
+        print("CSV mode activated.")
+    else:
+        data_read = 'Dummy'
+        print("Dummy mode activated.")
+
 
 
 def update_graphs(sensors):  # This accepts a dictionary of sensors (created in the initialization area)
@@ -42,36 +71,14 @@ def update():
     Initialization code -------------------------------------------------------------
 '''
 # press_csv = 'data_example.csv'  # The csv file to read things in from
-csv_file = ''
+
 read_csv = False  # If reading in live data from csv, set this to true
-time_increment = 250  # Amount of time it will take to update the GUI and data collection, measured in ms
+time_increment = 100  # Amount of time it will take to update the GUI and data collection, measured in ms
 
 # declare object for serial Communication
-ser = Communication()
+# ser = Communication()
 # declare object for storage in CSV
-data_base = data_handler()
-
-# Begins the loop/ update for the GUI script
-if ser.isOpen() or ser.dummyMode() or ser.csvMode():
-    if ser.isOpen():
-        data_read = "Serial"
-    elif ser.dummyMode():
-        data_read = "Dummy"
-    elif ser.csvMode():
-        data_read = "CSV"
-        csv_file = host.get_file_name()
-        try:
-            f = open(csv_file, 'rb')
-        except OSError:
-            print("Could not open/read file:", csv_file)
-            sys.exit()
-
-    timer = pg.QtCore.QTimer()
-    timer.timeout.connect(update)
-    timer.start(time_increment)  # Set this to the desired update speed of the GUI [milliseconds]
-else:
-    print("Something is wrong with the update call for the GUI, investigate!")
-
+# data_base = data_handler()
 
 # Example pressure sensor objects and characteristics
 p_sensors1 = {
@@ -106,6 +113,9 @@ t_sensors = {
     GUI Set-up and Updating Scripts ========================================================================
 '''
 
+timer = pg.QtCore.QTimer()
+timer.timeout.connect(update)
+timer.start(time_increment)  # Set this to the desired update speed of the GUI [milliseconds]
 
 # This is the command that keeps the GUI file running
 if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
