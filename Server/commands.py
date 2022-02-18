@@ -3,6 +3,7 @@ can execute'''
 from enum import Enum
 import message as msg
 import time
+import os
 
 import board
 from adafruit_motor import stepper
@@ -41,7 +42,7 @@ def rotate(motor, amount_deg):
     step_count = int(motor_rotation_deg / deg_per_step)
 
     if(abs(motor_rotation_deg) >= 90):
-        user_message = "Type \'yes\' to confirm %s degrees on device %s" % (motor_rotation_deg, Dev(motor).name)
+        user_message = "Type \'yes\' to confirm %s degrees on device %s" % (amount_deg, Dev(motor).name)
         if msg.demand(user_message) != 'yes':
             msg.tell("Operation Cancelled")
             return 4
@@ -59,24 +60,24 @@ def rotate(motor, amount_deg):
     if motor == Dev.LOX_MOTOR:
         for i in range(step_count):
             if msg.is_stopped():
-                msg.tell("Stopping LOX_MOTOR at position %.2f degrees" % LOX_MOTOR_POS_DEG/GEAR_RATIO)
+                msg.tell("Stopping LOX_MOTOR at position %.2f degrees" % (LOX_MOTOR_POS_DEG/GEAR_RATIO))
                 break
             else:
                 motors.stepper1.onestep(direction = dir, style=stepper.SINGLE)
                 LOX_MOTOR_POS_DEG += deg_per_step
                 time.sleep(0.01)
         motors.stepper1.release()
-        msg.tell("Successfully rotated LOX_MOTOR %.2f degrees" % LOX_MOTOR_POS_DEG/GEAR_RATIO)
+        msg.tell("Successfully rotated LOX_MOTOR %.2f degrees" % (LOX_MOTOR_POS_DEG/GEAR_RATIO))
 
     elif motor == Dev.KER_MOTOR:
         for i in range(step_count):
             if msg.is_stopped():
-                msg.tell("Stopping KER_MOTOR at position %.2f degrees" % KER_MOTOR_POS_DEG/GEAR_RATIO)
+                msg.tell("Stopping KER_MOTOR at position %.2f degrees" % (KER_MOTOR_POS_DEG/GEAR_RATIO))
             motors.stepper2.onestep(direction = dir, style=stepper.SINGLE)
             KER_MOTOR_POS_DEG += deg_per_step
             time.sleep(0.01)
         motors.stepper2.release()
-        msg.tell("Successfully rotated KER_MOTOR %.2f degrees" % KER_MOTOR_POS_DEG/GEAR_RATIO)
+        msg.tell("Successfully rotated KER_MOTOR %.2f degrees" % (KER_MOTOR_POS_DEG/GEAR_RATIO))
 
 def lox_motor_pos():
     msg.tell("LOX Motor rotated %.2f degrees" % (LOX_MOTOR_POS_DEG/GEAR_RATIO))
@@ -129,6 +130,7 @@ def help():
     ping: test connection
     help: print help menu
     rr: repeat last command
+    reboot: restart server
     '''
     msg.tell(s)
 
@@ -158,6 +160,13 @@ def rr():
 def ping():
     msg.tell("pong")
 
+def reboot():
+    if msg.demand("Are you sure you want to reboot [yes/no]") != 'yes':
+        msg.tell("Rebooting system (will automatically reconnect shortly)")
+        os.system('systemctl reboot -i')
+    else:
+        msg.tell("aborting")
+
 #dictionary of all commands, and number of args
 commands = {
     "lox_is": [lox_is, 1],
@@ -178,7 +187,7 @@ commands = {
 
     "ping": [ping, 1],
     "help": [help, 1],
-    "quit": [quit, 1],
+    "reboot": [reboot, 1],
     "rr": [rr, 1]
 }
 

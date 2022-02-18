@@ -37,7 +37,7 @@ conv_linear = {
 
 def read(data):
     '''Returns the specified data from the sensor'''
-    voltage = read_voltage(data)/ADC_GAIN
+    voltage = read_voltage(data)
     convert = conv_linear.get(data)
     return convert[0] + voltage*convert[1]
 
@@ -59,15 +59,15 @@ def read_all():
 
 def read_voltage(data):
     '''Returns the raw voltage value from the sensor'''
-    global SENSORS_AVAILABLE
+    global SENSORS_AVAILABLE, ADC_GAIN
     SENSORS_AVAILABLE.wait()
     SENSORS_AVAILABLE.clear()
     if data == Data.LOX_PSI:
-        a =  adc.read_voltage(2)
+        a =  adc.read_voltage(2)/ADC_GAIN
     elif data == Data.KER_PSI:
-        a = adc.read_voltage(3)
-    elif data ==Data.PRES_PSI:
-        a = adc.read_voltage(4)
+        a = adc.read_voltage(3)/ADC_GAIN
+    elif data == Data.PRES_PSI:
+        a = adc.read_voltage(4)/ADC_GAIN
     else:
         a = 0
     SENSORS_AVAILABLE.set()
