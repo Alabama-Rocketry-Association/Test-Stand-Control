@@ -162,9 +162,9 @@ def ping():
     msg.tell("pong")
 
 def reboot():
-    if msg.demand("Are you sure you want to reboot [yes/no]") != 'yes':
+    if msg.demand("Are you sure you want to reboot [yes/no]") == 'yes':
         msg.tell("Rebooting system (will automatically reconnect shortly)")
-        os.system('systemctl reboot -i')
+        os.system('sudo reboot now')
     else:
         msg.tell("aborting")
 
