@@ -64,7 +64,7 @@ def read_voltage(data):
     SENSORS_AVAILABLE.wait()
     SENSORS_AVAILABLE.clear()
     if data == Data.LOX_PSI:
-        a =  adc.read_voltage(1)
+        a =  adc.read_voltage(4)
     elif data == Data.KER_PSI:
         a = adc.read_voltage(2)
     elif data == Data.PRES_PSI:
