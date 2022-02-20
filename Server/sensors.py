@@ -50,7 +50,8 @@ def read_all():
     # print("begin loop: ", datetime.now())
     for item in Data:
         data_point = read(item)
-        csv_string = csv_string + str(data_point) + ','
+        data_point = f'{data_point:.2f}'
+        csv_string = csv_string + data_point + ','
         # print("   loop: ", datetime.now())
     csv_string = csv_string[:-1] + "\n"
     # print("end loop ", datetime.now())
