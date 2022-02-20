@@ -33,10 +33,19 @@ class Sensor:
         if self.type == 'Pressure':
             if self.arr == 1:
                 self.plot = press_graph1.plot(pen=(0, 0, 0))
+                self.text_display = pg.TextItem('AAAAAAAAAAAAAAAAAAAAAA', anchor=(0.5, 0.5), color="black")
+                self.text_display.setFont(font)
+                text_graph1.addItem(self.text_display)
             elif self.arr == 2:
                 self.plot = press_graph2.plot(pen=(205, 58, 27))
+                self.text_display = pg.TextItem('AAAAAAAAAAAAAAAAAAAAAA', anchor=(0.5, 0.5), color="r")
+                self.text_display.setFont(font)
+                text_graph2.addItem(self.text_display)
             elif self.arr == 3:
                 self.plot = press_graph3.plot(pen=(56, 152, 242))
+                self.text_display = pg.TextItem('AAAAAAAAAAAAAAAAAAAAAA', anchor=(0.5, 0.5), color="b")
+                self.text_display.setFont(font)
+                text_graph3.addItem(self.text_display)
             else:
                 print('Error with {}: check that it has an array value of 1-3'.format(self.name))
         
@@ -84,9 +93,13 @@ class Sensor:
     def graph_update(self, time):
         self.data[:-1] = self.data[1:]
         self.data[-1] = self.read_sensor()
+        self.text_update()
         time_shifted = (time)*(1000/self.time_inc) - len(self.data)
         self.plot.setData(self.data)
         self.plot.setPos(time_shifted, 0)
+
+    def text_update(self):
+        self.text_display.setText(str(self.data[-1]))
 
     def average(self):
         print("I will be used to create the average of the data")
@@ -139,8 +152,7 @@ view.resize(1200, 700)
 
 # Fonts for text items
 font = QtGui.QFont()
-font.setPixelSize(100)
-
+font.setPixelSize(75) # IF LOOKING TO CHANGE FONT SIZE CHANGE THIS VALUE
 
 # Title at top
 text = """
@@ -159,26 +171,6 @@ Layout.nextRow()
 # Buttons style
 style = "background-color:rgb(158, 27, 50);color:rgb(0,0,0);font-size:14px;"
 
-'''
-# Creating an interactive "save" button. Runs the class from "data_handler" to collect and store in a csv.
-lb = Layout.addLayout(colspan=21)
-proxy = QtGui.QGraphicsProxyWidget()
-save_button = QtGui.QPushButton('Start storage')
-save_button.setStyleSheet(style)
-save_button.clicked.connect(data_base.start)
-proxy.setWidget(save_button)
-lb.addItem(proxy)
-lb.nextCol()
-
-# QGraphicsProxyWidget creates the interactive button I THINK
-proxy2 = QtGui.QGraphicsProxyWidget()
-end_save_button = QtGui.QPushButton('Stop storage')
-end_save_button.setStyleSheet(style)
-end_save_button.clicked.connect(data_base.stop)
-proxy2.setWidget(end_save_button)
-lb.addItem(proxy2)
-'''
-
 Layout.nextRow()
 
 # Altitude graph
@@ -192,10 +184,10 @@ press_graph1 = l11.addPlot(title="Pressure Triad # 1 (Helium)")
 press_graph2 = l11.addPlot(title="Pressure Triad # 2 (Ethanol)")
 
 
-l1.nextRow()  # Moving the
+l1.nextRow()  # Moving the row down to the next for temperature and LOX pressure
 l12 = l1.addLayout(rowspan=1, border=(83, 83, 83))
 
-# Pressure Graph 2
+# Pressure Graph 3
 press_graph3 = l12.addPlot(title="Pressure Triad # 3 (LOX)")
 
 # Temperature graph
@@ -203,32 +195,29 @@ temp_graph = l12.addPlot(title="Temperature (ºc)")
 
 
 
-# Time, battery and free fall graphs
+# Pressurant, fuel, and LOX tanks pressures graphs, as well as time
 l2 = Layout.addLayout(border=(83, 83, 83))
 
 
-# Time graph
+# Creating the Pressurant Tank pressure reading graph
 l2.nextRow()
-text_graph1 = l2.addPlot(title="Time (min)")
+text_graph1 = l2.addPlot(title="Pressurant Tank Pressure Readings")
 text_graph1.hideAxis('bottom')
 text_graph1.hideAxis('left')
-text_text1 = pg.TextItem('AAAAAAAAAAAAAAAAAAAAAA', anchor=(0.5, 0.5), color="b")
-text_text1.setFont(font)
-text_text1.setText('YOOOOOOOOOOOOOO')
-text_graph1.addItem(text_text1)
 
+# Creating the Fuel Tank pressure reading graph
+l2.nextRow()
+text_graph2 = l2.addPlot(title="Fuel Tank Pressure Readings")
+text_graph2.hideAxis('bottom')
+text_graph2.hideAxis('left')
 
+# Creating the LOX Tank pressure reading graph
+l2.nextRow()
+text_graph3 = l2.addPlot(title="LOX Tank Pressure Readings")
+text_graph3.hideAxis('bottom')
+text_graph3.hideAxis('left')
 
-'''def update_time(sec_total, time_inc):
-    global time_text, sec, mins, hours, time_since_start
-    sec += (time_inc/1000)
-    mins = sec_total // 60
-    sec = sec % 60
-    hours = mins // 60
-    mins = mins % 60
-    time_since_start = "{0}:{1}:{2}".format(int(hours), int(mins), round(sec,1))
-    time_text.setText(time_since_start)
-'''
+# Creating the time plot graph and text object
 l2.nextRow()
 time_graph = l2.addPlot(title="Time (min)")
 time_graph.hideAxis('bottom')

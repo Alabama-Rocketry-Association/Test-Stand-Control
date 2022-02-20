@@ -73,8 +73,6 @@ def update():
         update_graphs(p_sensors3)
         #update_graphs(t_sensors)
 
-        # data_base.save(value_chain) # Part of the saving function, needs to be reworked
-
     except IndexError:
         print('Something is not indexing in the update function in main.py, please fix')
 
@@ -93,13 +91,13 @@ def update():
 # Example pressure sensor objects and characteristics
 p_sensors1 = {
     'p_sensor1': Sensor('Pressure Sensor 1', 'Pressure', 1, 0, csv_file, data_read, time_increment),
-    'p_sensor2': Sensor('Pressure Sensor 2', 'Pressure', 1, 1, csv_file, data_read, time_increment),
+    # 'p_sensor2': Sensor('Pressure Sensor 2', 'Pressure', 1, 1, csv_file, data_read, time_increment),
     # 'p_sensor3': Sensor('Pressure Sensor 3', 'Pressure', 1, 2, csv_file, data_read, time_increment)
 }
 # Creating a second pressure sensor array
 p_sensors2 = {
     'p_sensor4': Sensor('Pressure Sensor 4', 'Pressure', 2, 1, csv_file, data_read, time_increment),
-    'p_sensor5': Sensor('Pressure Sensor 5', 'Pressure', 2, 4, csv_file, data_read, time_increment),
+    # 'p_sensor5': Sensor('Pressure Sensor 5', 'Pressure', 2, 4, csv_file, data_read, time_increment),
     # 'p_sensor6': Sensor('Pressure Sensor 6', 'Pressure', 2, 5, csv_file, data_read, time_increment)
 }
 # Creating a third pressure sensor array
