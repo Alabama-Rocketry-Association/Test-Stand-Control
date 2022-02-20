@@ -178,10 +178,10 @@ l1 = Layout.addLayout(colspan=100, rowspan=100)
 l11 = l1.addLayout(rowspan=1, border=(83, 83, 83))
 
 # Pressure Graph 1
-press_graph1 = l11.addPlot(title="Pressure Triad # 1 (Helium)")
+press_graph1 = l11.addPlot(title="Pressure Triad # 1 (Pressurant)")
 
 # Making another pressure graph
-press_graph2 = l11.addPlot(title="Pressure Triad # 2 (Ethanol)")
+press_graph2 = l11.addPlot(title="Pressure Triad # 2 (Fuel)")
 
 
 l1.nextRow()  # Moving the row down to the next for temperature and LOX pressure
