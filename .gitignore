@@ -1,3 +1,4 @@
 data
 GUI\ files/data
 .DS_Store
+__pycache__

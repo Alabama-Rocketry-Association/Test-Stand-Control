@@ -119,7 +119,7 @@ def get_file_name():
     global FILE_NAME
     '''Gives the name of the file all data is
     currently being saved to'''
-    return FILE_NAME;
+    return FILE_NAME
 
 send = threading.Thread(name='sender', target=sender)
 send.start()

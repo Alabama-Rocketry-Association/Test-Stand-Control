@@ -41,7 +41,7 @@ def rotate(motor, amount_deg):
     deg_per_step = 1.8
     step_count = int(motor_rotation_deg / deg_per_step)
 
-    if(abs(motor_rotation_deg) >= 90):
+    if(abs(amount_deg) >= 90):
         user_message = "Type \'yes\' to confirm %s degrees on device %s" % (amount_deg, Dev(motor).name)
         if msg.demand(user_message) != 'yes':
             msg.tell("Operation Cancelled")
@@ -67,7 +67,7 @@ def rotate(motor, amount_deg):
                 LOX_MOTOR_POS_DEG += deg_per_step
                 time.sleep(0.01)
         motors.stepper1.release()
-        msg.tell("Successfully rotated LOX_MOTOR %.2f degrees" % (LOX_MOTOR_POS_DEG/GEAR_RATIO))
+        msg.tell("Successfully set LOX_MOTOR position to %.2f degrees" % (LOX_MOTOR_POS_DEG/GEAR_RATIO))
 
     elif motor == Dev.KER_MOTOR:
         for i in range(step_count):
@@ -78,7 +78,7 @@ def rotate(motor, amount_deg):
             KER_MOTOR_POS_DEG += deg_per_step
             time.sleep(0.01)
         motors.stepper2.release()
-        msg.tell("Successfully rotated KER_MOTOR %.2f degrees" % (KER_MOTOR_POS_DEG/GEAR_RATIO))
+        msg.tell("Successfully set KER_MOTOR position to %.2f degrees" % (KER_MOTOR_POS_DEG/GEAR_RATIO))
 
 def lox_motor_pos():
     msg.tell("LOX Motor rotated %.2f degrees" % (LOX_MOTOR_POS_DEG/GEAR_RATIO))
