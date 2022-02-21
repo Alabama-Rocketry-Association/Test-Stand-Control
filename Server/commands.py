@@ -65,7 +65,7 @@ def rotate(motor, amount_deg):
             else:
                 motors.stepper1.onestep(direction = dir, style=stepper.SINGLE)
                 LOX_MOTOR_POS_DEG += deg_per_step
-                time.sleep(0.01)
+                #time.sleep(0.01)
         motors.stepper1.release()
         msg.tell("Successfully set LOX_MOTOR position to %.2f degrees" % (LOX_MOTOR_POS_DEG/GEAR_RATIO))
 
@@ -74,9 +74,10 @@ def rotate(motor, amount_deg):
             if msg.is_stopped():
                 msg.tell("Stopping KER_MOTOR at position %.2f degrees" % (KER_MOTOR_POS_DEG/GEAR_RATIO))
                 break
-            motors.stepper2.onestep(direction = dir, style=stepper.SINGLE)
-            KER_MOTOR_POS_DEG += deg_per_step
-            time.sleep(0.01)
+            else:
+                motors.stepper2.onestep(direction = dir, style=stepper.SINGLE)
+                KER_MOTOR_POS_DEG += deg_per_step
+                #time.sleep(0.01)
         motors.stepper2.release()
         msg.tell("Successfully set KER_MOTOR position to %.2f degrees" % (KER_MOTOR_POS_DEG/GEAR_RATIO))
 
