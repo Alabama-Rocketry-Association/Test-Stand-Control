@@ -1,0 +1,42 @@
+{
+    "motors": {
+        "lox_reg": {
+            "step_offset": 0,
+            "gear_ratio": 100,
+            "step_size": 1.8,
+            "conversion": [
+                0,
+                1.3
+            ]
+        },
+        "ker_reg": {
+            "step_offset": 0,
+            "gear_ratio": 100,
+            "step_size": 1.8,
+            "conversion": [
+                0,
+                1.3
+            ]
+        }
+    },
+    "sensors": {
+        "pres_psi": {
+            "conversion": [
+                0.0006875,
+                100700
+            ]
+        },
+        "lox_psi": {
+            "conversion": [
+                0.0006875,
+                10070
+            ]
+        },
+        "ker_psi": {
+            "conversion": [
+                0.0006875,
+                10070
+            ]
+        }
+    }
+}
