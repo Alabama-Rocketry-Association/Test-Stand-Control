@@ -157,10 +157,12 @@ def rotate_psi(motor, psi):
 
 #Rotates specified motor by specified number of steps
 def lox_motor_pos():
-    msg.tell("LOX Motor rotated %.2f degrees" % (get_degrees(LOX_MOTOR_STEP_OFFSET)))
+    step_offset = settings['motors']['lox_reg']['step_offset']
+    msg.tell("LOX Motor rotated %.2f degrees" % (get_degrees(step_offset)))
 
 def ker_motor_pos():
-    msg.tell("KEROSENE Motor rotated %.2f degrees" % (get_degrees(KER_MOTOR_STEP_OFFSET)))
+    step_offset = settings['motors']['ker_reg']['step_offset']
+    msg.tell("KEROSENE Motor rotated %.2f degrees" % (get_degrees(step_offset)))
 
 def lox_psi(psi):
     rotate_psi(Dev.LOX_MOTOR, psi)
