@@ -144,7 +144,7 @@ def rotate_psi(motor, psi):
 
     #find corresponding degree displacement
     new_pos = 0
-    for i in conversion:
+    for i in range(len(conversion)):
         new_pos += (psi**i)*conversion[i]
 
     new_step_pos = get_steps(new_pos)
