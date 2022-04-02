@@ -42,11 +42,94 @@ class Dev(Enum):
     LOX_MOTOR = 1
     KER_MOTOR = 2
 
+def get_degrees(steps):
+    global settings
+    gear_ratio = settings['motors']['lox_reg']['gear_ratio']
+    step_size = settings['motors']['lox_reg']['step_size'] 
+
+    return steps*step_size/gear_ratio
+
+def get_steps(degrees):
+    global settings
+    gear_ratio = settings['motors']['lox_reg']['gear_ratio']
+    step_size = settings['motors']['lox_reg']['step_size']  
+
+    return round(degrees*gear_ratio/step_size)
+
 # Rotates specified motor by specified number of steps
+def rotate_steps(motor, num_steps):
+    global settings
+
+    if num_steps > 0:
+        dir = stepper.FORWARD
+        inc = 1
+    else:
+        dir = stepper.BACKWARD
+        inc = -1 
+
+    if motor == Dev.LOX_MOTOR:
+
+        step_offset = settings['motors']['lox_reg']['step_offset']
+
+        for i in range(num_steps):
+            if msg.is_stopped():
+                msg.tell("Stopping LOX_MOTOR at position %.2f degrees" % (get_degrees(step_offset)))
+                break
+            else:
+                motors.stepper1.onestep(direction = dir, style=stepper.DOUBLE)
+                step_offset += inc
+                time.sleep(0.0001)
+        motors.stepper1.release()
+
+        # Update the JSON file with the new position
+        settings['motors']['lox_reg']['step_offset'] = step_offset
+        with open('settings.json', 'w') as f:
+            f.write(json.dumps(settings))
+            f.close()
+
+        msg.tell("Successfully set LOX_MOTOR position to %.2f degrees" % (get_degrees(step_offset)))
+
+    elif motor == Dev.KER_MOTOR:
+
+        step_offset = settings['motors']['ker_reg']['step_offset']
+
+        for i in range(num_steps):
+            if msg.is_stopped():
+                msg.tell("Stopping KER_MOTOR at position %.2f degrees" % (get_degrees(step_offset)))
+                break
+            else:
+                motors.stepper2.onestep(direction = dir, style=stepper.DOUBLE)
+                KER_MOTOR_STEP_OFFSET += inc
+                time.sleep(0.0001)
+        motors.stepper2.release()
+
+        # Update the JSON file with the new position
+        settings['motors']['ker_reg']['step_offset'] = step_offset
+        with open('settings.json', 'w') as f:
+            f.write(json.dumps(settings))
+            f.close()
+
+        msg.tell("Successfully set KER_MOTOR position to %.2f degrees" % (get_degrees(step_offset)))
+
+def rotate(motor, amount_deg):
+
+    if(abs(amount_deg) >= 90):
+        user_message = "Type \'yes\' to confirm %s degrees on device %s" % (amount_deg, Dev(motor).name)
+        if msg.demand(user_message) != 'yes':
+            msg.tell("Operation Cancelled")
+            return 4
+
+    msg.tell(("Rotating %s Motor %s degrees") % (Dev(motor).name, amount_deg))
+    msg.cmd_ready() 
+
+    rotate_steps(motor, get_steps(amount_deg))
+
+'''
+# Rotates specified motor by specified number of degrees
 def rotate(motor, amount_deg):
     global LOX_MOTOR_STEP_OFFSET, KER_MOTOR_STEP_OFFSET
 
-    num_steps = (amount_deg * GEAR_RATIO) // STEP_SIZE
+    num_steps = int((amount_deg * GEAR_RATIO) // STEP_SIZE)
 
     if(abs(amount_deg) >= 90):
         user_message = "Type \'yes\' to confirm %s degrees on device %s" % (amount_deg, Dev(motor).name)
@@ -57,40 +140,41 @@ def rotate(motor, amount_deg):
     msg.tell(("Rotating %s Motor %s degrees") % (Dev(motor).name, amount_deg))
     msg.cmd_ready()
 
-    if step_count > 0:
+    if num_steps > 0:
         dir = stepper.FORWARD
+        inc = 1
     else:
         dir = stepper.BACKWARD
-        step_count = step_count * -1
+        inc = -1
 
     
     if motor == Dev.LOX_MOTOR:
         for i in range(num_steps):
             if msg.is_stopped():
-                msg.tell("Stopping LOX_MOTOR at position %.2f degrees" % (LOX_MOTOR_STEP_OFFSET*STEP_SIZE))
+                msg.tell("Stopping LOX_MOTOR at position %.2f degrees" % (LOX_MOTOR_STEP_OFFSET*STEP_SIZE/GEAR_RATIO))
                 break
             else:
                 motors.stepper1.onestep(direction = dir, style=stepper.DOUBLE)
-                LOX_MOTOR_STEP_OFFSET = (i+1) / GEAR_RATIO 
+                LOX_MOTOR_STEP_OFFSET += inc
                 time.sleep(0.0001)
         motors.stepper1.release()
 
         # Update the JSON file with the new position
-        settings['motors']['ker_reg']['step_offset'] = KER_MOTOR_STEP_OFFSET
+        settings['motors']['lox_reg']['step_offset'] = LOX_MOTOR_STEP_OFFSET
         with open('settings.json', 'w') as f:
             f.write(json.dumps(settings))
             f.close()
 
-        msg.tell("Successfully set LOX_MOTOR position to %.2f degrees" % (LOX_MOTOR_STEP_OFFSET*STEP_SIZE))
+        msg.tell("Successfully set LOX_MOTOR position to %.2f degrees" % (LOX_MOTOR_STEP_OFFSET*STEP_SIZE/GEAR_RATIO))
 
     elif motor == Dev.KER_MOTOR:
-        for i in range(step_count):
+        for i in range(num_steps):
             if msg.is_stopped():
-                msg.tell("Stopping KER_MOTOR at position %.2f degrees" % (KER_MOTOR_STEP_OFFSET*STEP_SIZE))
+                msg.tell("Stopping KER_MOTOR at position %.2f degrees" % (KER_MOTOR_STEP_OFFSET*STEP_SIZE/GEAR_RATIO))
                 break
             else:
                 motors.stepper2.onestep(direction = dir, style=stepper.DOUBLE)
-                KER_MOTOR_STEP_OFFSET = (i+1) / GEAR_RATIO 
+                KER_MOTOR_STEP_OFFSET += inc
                 time.sleep(0.0001)
         motors.stepper2.release()
 
@@ -100,15 +184,44 @@ def rotate(motor, amount_deg):
             f.write(json.dumps(settings))
             f.close()
 
-        msg.tell("Successfully set KER_MOTOR position to %.2f degrees" % (KER_MOTOR_STEP_OFFSET*STEP_SIZE))
-    
+        msg.tell("Successfully set KER_MOTOR position to %.2f degrees" % (KER_MOTOR_STEP_OFFSET*STEP_SIZE/GEAR_RATIO))
+'''
+
+def rotate_psi(motor, psi):
+    global settings
+
+    user_message = "Type \'yes\' to confirm %s psi on device %s" % (psi, Dev(motor).name)
+    if msg.demand(user_message) != 'yes':
+        msg.tell("Operation Cancelled")
+        return 4
+
+    #conversion array takes psi and gives location in degrees
+    if motor == Dev.LOX_MOTOR:
+        conversion = settings['motors']['lox_reg']['conversion']
+        current_steps = settings['motors']['lox_reg']['step_offset']
+    elif motor == Dev.KER_MOTOR:
+        conversion = settings['motors']['ker_reg']['conversion']
+        current_steps = settings['motors']['ker_reg']['step_offset']
+
+    #find corresponding degree displacement
+    new_pos = 0
+    for i in conversion:
+        new_pos += (psi**i)*conversion[i]
+
+    new_step_pos = get_steps(new_pos)
+
+    msg.tell(("Rotating %s Motor %s degrees") % (Dev(motor).name, get_degrees(new_step_pos - current_steps)))
+    msg.cmd_ready() 
+
+    rotate_steps(motor, new_step_pos - current_steps)
+
 
 #Rotates specified motor by specified number of steps
 def lox_motor_pos():
-    msg.tell("LOX Motor rotated %.2f degrees" % (LOX_MOTOR_STEP_OFFSET*STEP_SIZE))
+    msg.tell("LOX Motor rotated %.2f degrees" % (get_degrees(LOX_MOTOR_STEP_OFFSET)))
 
 def ker_motor_pos():
-    msg.tell("KEROSENE Motor rotated %.2f degrees" % (KER_MOTOR_STEP_OFFSET*STEP_SIZE))
+    msg.tell("KEROSENE Motor rotated %.2f degrees" % (get_degrees(KER_MOTOR_STEP_OFFSET)))
 
 def lox_is():
     rotate(Dev.LOX_MOTOR,10)
