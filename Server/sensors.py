@@ -44,17 +44,15 @@ def read(data):
 def read_all():
     '''Collects data from all sensors and stores it as one
     line of a .csv file'''
-    # print("start: ", datetime.now())
-    csv_string = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+    csv_string = datetime.now().strftime("%H:%M:%S.%f")[:-1]
     csv_string = csv_string + ','
-    # print("begin loop: ", datetime.now())
+
     for item in Data:
         data_point = read(item)
         data_point = f'{data_point:.2f}'
         csv_string = csv_string + data_point + ','
-        # print("   loop: ", datetime.now())
     csv_string = csv_string[:-1] + "\n"
-    # print("end loop ", datetime.now())
+    
     return csv_string
 
 

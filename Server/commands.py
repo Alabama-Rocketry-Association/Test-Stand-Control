@@ -6,6 +6,7 @@ import time
 import os
 import json
 
+import RPi.GPIO as GPIO
 import board
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
@@ -16,14 +17,26 @@ __author__ = "Aidan Cantu"
 
 LAST_COMMAND = []
 
-# load calibration data from JSON file
+# load data from JSON file
 with open('settings.json') as f:
     settings = json.load(f)
     f.close()
 
-# make JSON variables global variables in program
-LOX_MOTOR_STEP_OFFSET = settings['motors']['lox_reg']['step_offset']
-KER_MOTOR_STEP_OFFSET = settings['motors']['ker_reg']['step_offset']
+# initialize GPIO
+def init_gpio():
+    global settings
+    for key in settings['gpio']:
+        if key['setup']=='out':
+            GPIO.setup(key['pin'], GPIO.OUT)
+            GPIO.output(key['pin'], key['default'])
+        elif key['setup']=='in':
+            GPIO.setup(key['pin'], GPIO.IN)
+            GPIO.output(key['pin'], key['default'])
+    return 0
+
+init_gpio()
+
+motors = MotorKit(i2c=board.I2C())
 
 # stepper1 --> M1, M2 terminals
 # stepper2 --> M3, M4 terminals
@@ -34,25 +47,82 @@ KER_MOTOR_STEP_OFFSET = settings['motors']['ker_reg']['step_offset']
 # stepper.FORWARD = clockwise, increase presssure
 # stepper.BACKWARD = counterclockwise, decrease pressure
 
-motors = MotorKit(i2c=board.I2C())
-GEAR_RATIO = settings['motors']['lox_reg']['gear_ratio']
-STEP_SIZE = settings['motors']['lox_reg']['step_size']
-
 class Dev(Enum):
     LOX_MOTOR = 1
     KER_MOTOR = 2
 
+# Set the GPIO pin item to the specified value
+def set_gpio(item, value):
+    global settings
+    for key in settings['gpio']:
+        if key==item:
+            GPIO.output(key['pin'], value)
+            settings['gpio'][key]['current'] = 0
+            save()
+            return 0
+    return 1
+
+# Open the corresponding valve by setting the GPIO to low
+def open(valve):
+    if set_gpio(valve, 0) == 0:
+        msg.tell("Opened %s" % valve)
+        return 0
+    msg.tell("%s does not exist, operation cancelled" % valve)
+    return 0
+
+# Close the corresponding valve by setting the GPIO to high
+def close(valve):
+    if set_gpio(valve, 1) == 0:
+        msg.tell("Opened %s" % valve)
+        return 0
+    msg.tell("%s does not exist, operation cancelled" % valve)
+    return 0
+
+# Enable the 2ways or the ignitor
+def enable(item):
+    if item=='2way' or item=='twoway':
+        open('tenpercent_2way')
+        open('fullflow_2way')
+        open('ventlox_2way')
+        open('ventker_2way')
+        open('mainlox_2way')
+        open('mainker_2way')
+        return 0
+    elif item=='ignition' or item=='ignitor' or item=='igniter':
+        open('ignition')
+        return 0
+    msg.tell("%s does not exist, operation cancelled" % item)
+    return 0
+
+# Disable the 2ways or the ignitor
+def disable(item):
+    if item=='2way' or item=='twoway':
+        close('tenpercent_2way')
+        close('fullflow_2way')
+        close('ventlox_2way')
+        close('ventker_2way')
+        close('mainlox_2way')
+        close('mainker_2way')
+        return 0
+    elif item=='ignition' or item=='ignitor' or item=='igniter':
+        close('ignition')
+        return 0
+    msg.tell("%s does not exist, operation cancelled" % item)
+    return 0
+
+# Convert a number of steps on the motor to the number of corresponding degrees
 def get_degrees(steps):
     global settings
-    gear_ratio = settings['motors']['lox_reg']['gear_ratio']
-    step_size = settings['motors']['lox_reg']['step_size'] 
+    gear_ratio = settings['lox_reg']['gear_ratio']
+    step_size = settings['lox_reg']['step_size'] 
 
     return steps*step_size/gear_ratio
 
+# Convert a number of degrees to the approximate number of corresponding steps
 def get_steps(degrees):
     global settings
-    gear_ratio = settings['motors']['lox_reg']['gear_ratio']
-    step_size = settings['motors']['lox_reg']['step_size']  
+    gear_ratio = settings['lox_reg']['gear_ratio']
+    step_size = settings['lox_reg']['step_size']  
 
     return round(degrees*gear_ratio/step_size)
 
@@ -68,9 +138,9 @@ def rotate_steps(motor, num_steps):
         inc = -1
         num_steps *= -1
 
+    # Rotate the LOX_MOTOR
     if motor == Dev.LOX_MOTOR:
-
-        step_offset = settings['motors']['lox_reg']['step_offset']
+        step_offset = settings['lox_reg']['step_offset']
 
         for i in range(num_steps):
             if msg.is_stopped():
@@ -79,20 +149,15 @@ def rotate_steps(motor, num_steps):
             else:
                 motors.stepper1.onestep(direction = dir, style=stepper.DOUBLE)
                 step_offset += inc
+                settings['lox_reg']['step_offset'] = step_offset
                 time.sleep(0.0001)
         motors.stepper1.release()
 
-        # Update the JSON file with the new position
-        settings['motors']['lox_reg']['step_offset'] = step_offset
-        with open('settings.json', 'w') as f:
-            f.write(json.dumps(settings))
-            f.close()
-
         msg.tell("Successfully set LOX_MOTOR position to %.2f degrees" % (get_degrees(step_offset)))
 
+    # Rotate the KER_MOTOR
     elif motor == Dev.KER_MOTOR:
-
-        step_offset = settings['motors']['ker_reg']['step_offset']
+        step_offset = settings['ker_reg']['step_offset']
 
         for i in range(num_steps):
             if msg.is_stopped():
@@ -101,17 +166,16 @@ def rotate_steps(motor, num_steps):
             else:
                 motors.stepper2.onestep(direction = dir, style=stepper.DOUBLE)
                 step_offset += inc
+                settings['ker_reg']['step_offset'] = step_offset
                 time.sleep(0.0001)
         motors.stepper2.release()
 
-        # Update the JSON file with the new position
-        settings['motors']['ker_reg']['step_offset'] = step_offset
-        with open('settings.json', 'w') as f:
-            f.write(json.dumps(settings))
-            f.close()
-
         msg.tell("Successfully set KER_MOTOR position to %.2f degrees" % (get_degrees(step_offset)))
 
+    # Update the JSON file with the new position
+    save()
+
+# rotate the specified motor by a specified number of degrees
 def rotate(motor, amount_deg):
 
     if(abs(amount_deg) >= 90):
@@ -136,11 +200,11 @@ def rotate_psi(motor, psi):
 
     #conversion array takes psi and gives location in degrees
     if motor == Dev.LOX_MOTOR:
-        conversion = settings['motors']['lox_reg']['conversion']
-        current_steps = settings['motors']['lox_reg']['step_offset']
+        conversion = settings['lox_reg']['conversion']
+        current_steps = settings['lox_reg']['step_offset']
     elif motor == Dev.KER_MOTOR:
-        conversion = settings['motors']['ker_reg']['conversion']
-        current_steps = settings['motors']['ker_reg']['step_offset']
+        conversion = settings['ker_reg']['conversion']
+        current_steps = settings['ker_reg']['step_offset']
 
     #find corresponding degree displacement
     new_pos = 0
@@ -155,33 +219,23 @@ def rotate_psi(motor, psi):
     rotate_steps(motor, new_step_pos - current_steps)
 
 
-#Rotates specified motor by specified number of steps
+# Get the current angular displacement of each motor
 def lox_motor_pos():
-    step_offset = settings['motors']['lox_reg']['step_offset']
+    step_offset = settings['lox_reg']['step_offset']
     msg.tell("LOX Motor rotated %.2f degrees" % (get_degrees(step_offset)))
 
 def ker_motor_pos():
-    step_offset = settings['motors']['ker_reg']['step_offset']
+    step_offset = settings['ker_reg']['step_offset']
     msg.tell("KEROSENE Motor rotated %.2f degrees" % (get_degrees(step_offset)))
 
+# Set each motor to the approximate PSI level
 def lox_psi(psi):
     rotate_psi(Dev.LOX_MOTOR, psi)
 
 def ker_psi(psi):
     rotate_psi(Dev.KER_MOTOR, psi)
 
-def lox_is():
-    rotate(Dev.LOX_MOTOR,10)
-
-def lox_ds():
-    rotate(Dev.LOX_MOTOR,-10)
-
-def ker_is():
-    rotate(Dev.KER_MOTOR,10)
-
-def ker_ds():
-    rotate(Dev.KER_MOTOR,-10)
-
+# Rotate each motor by n degrees
 def lox_inc(n):
     rotate(Dev.LOX_MOTOR,n)
 
@@ -196,21 +250,22 @@ def ker_dec(n):
 
 def help():
     s = '''
-    lox_is: runs 10 degrees forward on lox
-    lox_ds: runs 10 degrees backward on lox
-    ker_is: runs 10 degrees forward on kerosene
-    ker_ds: runs 10 degrees backward on kerosene
-
     lox_inc [n]: runs n degrees forward on lox
     lox_dec [n]: runs n degrees backward on lox
     ker_inc [n]: runs n degrees forward on kerosene
     ker_dec [n]: runs n degrees backward on kerosene
 
+    lox_psi [n]: set the lox tank to n psi
+    ker_psi [n]: psi: set the ker tank to n psi 
+
+    open [valve]: opens the corresponding valve
+    close [valve]: closes the corresponding valve
+
+    enable [item]: enables the corresponding item
+    disable [item]: disables the corresponding item
+
     lox_motor_pos: return angular offset of lox motor
     ker_motor_pos: return angular offset of ker motor
-
-    lox_psi [n]: set the lox tank to n psi
-    ker_psi [n]: psi: set the ker tank to n psi
 
     log [T/F]: start or stop logging sensor data
     calibrate: sets y-intercept of all sensors to 0
@@ -257,21 +312,23 @@ def reboot():
 
 #dictionary of all commands, and number of args
 commands = {
-    "lox_is": [lox_is, 1],
-    "lox_ds": [lox_ds, 1],
-    "ker_is": [ker_is, 1],
-    "ker_ds": [ker_ds, 1],
 
     "lox_inc": [lox_inc, 2],
     "lox_dec": [lox_dec, 2],
     "ker_inc": [ker_inc, 2],
     "ker_dec": [ker_dec, 2],
 
-    "lox_motor_pos": [lox_motor_pos, 1],
-    "ker_motor_pos": [ker_motor_pos, 1],
-
     "lox_psi": [lox_psi, 2],
     "ker_psi": [ker_psi, 2],
+
+    "open": [open, 2],
+    "close": [close, 2],
+
+    "enable": [enable, 2],
+    "disable": [disable, 2],
+
+    "lox_motor_pos": [lox_motor_pos, 1],
+    "ker_motor_pos": [ker_motor_pos, 1],
 
     "log": [log, 2],
     "calibrate": [calibrate, 1],
@@ -326,3 +383,9 @@ def parse(user_input):
 
     return user_command
 
+# Save current settings dictionary to file
+def save():
+    global settings
+    with open('settings.json', 'w') as f:
+        f.write(json.dumps(settings))
+        f.close()
