@@ -38,79 +38,65 @@
     },
     "gpio":
     {
-        "tenpercent": 
+        "press": 
         {
-            "pin":1,
-            "setup":"out",
-            "default":1,
-            "current":0
-        },
-        "fullflow": 
-        {
-            "pin":2,
+            "pin":19,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ventlox": 
         {
-            "pin":3,
+            "pin":23,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ventker": 
         {
-            "pin":4,
+            "pin":22,
             "setup":"out",
             "default":1,
             "current":0
         },
         "mainlox": 
         {
-            "pin":5,
+            "pin":13,
             "setup":"out",
             "default":1,
             "current":0
         },
         "mainker": 
         {
-            "pin":6,
+            "pin":16,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ignition": 
         {
-            "pin":7,
+            "pin":69,
             "setup":"out",
             "default":1,
             "current":0
         },
-        "tenpercent_2way": 
+        "press_2way": 
         {
-            "pin":8,
-            "setup":"out",
-            "default":1,
-            "current":0
-        },
-        "fullflow_2way": 
-        {
-            "pin":9,
+            "pin":25,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ventlox_2way": 
         {
-            "pin":10,
+            "pin":24,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ventker_2way": 
         {
-            "pin":11,
+            "pin":5,
             "setup":"out",
             "default":1,
             "current":0
@@ -124,7 +110,7 @@
         },
         "mainker_2way": 
         {
-            "pin":13,
+            "pin":6,
             "setup":"out",
             "default":1,
             "current":0
