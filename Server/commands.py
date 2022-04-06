@@ -26,12 +26,12 @@ with open('settings.json') as f:
 def init_gpio():
     global settings
     for key in settings['gpio']:
-        if key['setup']=='out':
-            GPIO.setup(key['pin'], GPIO.OUT)
-            GPIO.output(key['pin'], key['default'])
+        if settings['gpio'][key]['setup']=='out':
+            GPIO.setup(settings['gpio'][key]['pin'], GPIO.OUT)
+            GPIO.output(settings['gpio'][key]['pin'], settings['gpio'][key]['default'])
         elif key['setup']=='in':
-            GPIO.setup(key['pin'], GPIO.IN)
-            GPIO.output(key['pin'], key['default'])
+            GPIO.setup(settings['gpio'][key]['pin'], GPIO.IN)
+            GPIO.output(settings['gpio'][key]['pin'], settings['gpio'][key]['default'])
     return 0
 
 init_gpio()
@@ -56,7 +56,7 @@ def set_gpio(item, value):
     global settings
     for key in settings['gpio']:
         if key==item:
-            GPIO.output(key['pin'], value)
+            GPIO.output(settings['gpio'][key]['pin'], value)
             settings['gpio'][key]['current'] = 0
             save()
             return 0

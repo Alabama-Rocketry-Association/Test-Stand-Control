@@ -1,7 +1,7 @@
 {
     
     "lox_reg": {
-        "step_offset": 0,
+        "step_offset": 98333,
         "gear_ratio": 100,
         "step_size": 1.8,
         "conversion": [
@@ -10,7 +10,7 @@
         ]
     },
     "ker_reg": {
-        "step_offset": 0,
+        "step_offset": 98334,
         "gear_ratio": 100,
         "step_size": 1.8,
         "conversion": [
