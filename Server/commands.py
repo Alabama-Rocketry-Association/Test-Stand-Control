@@ -25,14 +25,29 @@ with open('settings.json') as f:
 # initialize GPIO
 def init_gpio():
     global settings
+
+    GPIO.cleanup()
     GPIO.setmode(GPIO.BCM) 
+
     for key in settings['gpio']:
-        if settings['gpio'][key]['setup']=='out':
-            GPIO.setup(settings['gpio'][key]['pin'], GPIO.OUT)
-            GPIO.output(settings['gpio'][key]['pin'], settings['gpio'][key]['default'])
-        elif key['setup']=='in':
-            GPIO.setup(settings['gpio'][key]['pin'], GPIO.IN)
-            GPIO.output(settings['gpio'][key]['pin'], settings['gpio'][key]['default'])
+        
+        dev = settings['gpio'][key]
+
+        if dev['mode']=='out':
+            GPIO.setup(dev['pin'], GPIO.OUT)
+            GPIO.output(dev['pin'], dev['default'])
+            
+        elif dev['mode']=='in':
+            GPIO.setup(dev['pin'], GPIO.IN)
+            GPIO.output(dev[key]['pin'], dev['default'])
+
+        elif dev['mode']=='opendrain':
+            if dev['default'] == 1:
+                 GPIO.setup(dev['pin'], GPIO.OUT)
+                 GPIO.output(dev['pin'], 0)
+            elif dev['default'] == 0:
+                GPIO.setup(dev['pin'], GPIO.IN)
+        
     return 0
 
 init_gpio()
@@ -56,9 +71,18 @@ class Dev(Enum):
 def set_gpio(item, value):
     global settings
     for key in settings['gpio']:
-        if key==item:
-            GPIO.output(settings['gpio'][key]['pin'], value)
-            settings['gpio'][key]['current'] = value
+        dev = settings['gpio'][key]
+        if key==item and dev['mode'] == "out":
+            GPIO.output(dev['pin'], value)
+            dev['current'] = value
+            save()
+            return 0
+        elif key==item and dev['mode'] == "opendrain":
+            if value == 1:
+                 GPIO.setup(dev['pin'], GPIO.OUT) 
+            elif value == 0:
+                GPIO.setup(dev['pin'], GPIO.IN)
+
             save()
             return 0
     return 1

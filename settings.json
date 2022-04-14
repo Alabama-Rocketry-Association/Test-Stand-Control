@@ -41,70 +41,70 @@
         "press": 
         {
             "pin":35,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "ventlox": 
         {
             "pin":16,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "ventker": 
         {
             "pin":15,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "mainlox": 
         {
             "pin":33,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "mainker": 
         {
             "pin":36,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "press_2way": 
         {
             "pin":22,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "ventlox_2way": 
         {
             "pin":18,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "ventker_2way": 
         {
             "pin":29,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "mainlox_2way": 
         {
             "pin":32,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         },
         "mainker_2way": 
         {
             "pin":31,
-            "setup":"out",
+            "setup":"opendrain",
             "default":1,
             "current":0
         }
