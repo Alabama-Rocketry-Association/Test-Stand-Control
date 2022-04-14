@@ -25,6 +25,7 @@ with open('settings.json') as f:
 # initialize GPIO
 def init_gpio():
     global settings
+    GPIO.setmode(GPIO.BCM) 
     for key in settings['gpio']:
         if settings['gpio'][key]['setup']=='out':
             GPIO.setup(settings['gpio'][key]['pin'], GPIO.OUT)
@@ -57,7 +58,7 @@ def set_gpio(item, value):
     for key in settings['gpio']:
         if key==item:
             GPIO.output(settings['gpio'][key]['pin'], value)
-            settings['gpio'][key]['current'] = 0
+            settings['gpio'][key]['current'] = value
             save()
             return 0
     return 1
@@ -73,7 +74,7 @@ def open(valve):
 # Close the corresponding valve by setting the GPIO to high
 def close(valve):
     if set_gpio(valve, 1) == 0:
-        msg.tell("Opened %s" % valve)
+        msg.tell("Closed %s" % valve)
         return 0
     msg.tell("%s does not exist, operation cancelled" % valve)
     return 0
@@ -81,8 +82,7 @@ def close(valve):
 # Enable the 2ways or the ignitor
 def enable(item):
     if item=='2way' or item=='twoway':
-        open('tenpercent_2way')
-        open('fullflow_2way')
+        open('press_2way')
         open('ventlox_2way')
         open('ventker_2way')
         open('mainlox_2way')
@@ -97,8 +97,7 @@ def enable(item):
 # Disable the 2ways or the ignitor
 def disable(item):
     if item=='2way' or item=='twoway':
-        close('tenpercent_2way')
-        close('fullflow_2way')
+        close('press_2way')
         close('ventlox_2way')
         close('ventker_2way')
         close('mainlox_2way')

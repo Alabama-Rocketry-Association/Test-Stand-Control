@@ -40,77 +40,70 @@
     {
         "press": 
         {
-            "pin":19,
+            "pin":35,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ventlox": 
         {
-            "pin":23,
+            "pin":16,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ventker": 
         {
-            "pin":22,
+            "pin":15,
             "setup":"out",
             "default":1,
             "current":0
         },
         "mainlox": 
         {
-            "pin":13,
+            "pin":33,
             "setup":"out",
             "default":1,
             "current":0
         },
         "mainker": 
         {
-            "pin":16,
-            "setup":"out",
-            "default":1,
-            "current":0
-        },
-        "ignition": 
-        {
-            "pin":69,
+            "pin":36,
             "setup":"out",
             "default":1,
             "current":0
         },
         "press_2way": 
         {
-            "pin":25,
+            "pin":22,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ventlox_2way": 
         {
-            "pin":24,
+            "pin":18,
             "setup":"out",
             "default":1,
             "current":0
         },
         "ventker_2way": 
         {
-            "pin":5,
+            "pin":29,
             "setup":"out",
             "default":1,
             "current":0
         },
         "mainlox_2way": 
         {
-            "pin":12,
+            "pin":32,
             "setup":"out",
             "default":1,
             "current":0
         },
         "mainker_2way": 
         {
-            "pin":6,
+            "pin":31,
             "setup":"out",
             "default":1,
             "current":0
