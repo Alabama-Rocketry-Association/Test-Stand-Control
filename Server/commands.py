@@ -26,30 +26,30 @@ with open('settings.json') as f:
 def init_gpio():
     global settings
 
-    GPIO.cleanup()
-    GPIO.setmode(GPIO.BCM) 
 
     for key in settings['gpio']:
         
         dev = settings['gpio'][key]
 
         if dev['mode']=='out':
-            GPIO.setup(dev['pin'], GPIO.OUT)
-            GPIO.output(dev['pin'], dev['default'])
+            GPIO.setup(dev['gpio'], GPIO.OUT)
+            GPIO.output(dev['gpio'], dev['default'])
             
         elif dev['mode']=='in':
-            GPIO.setup(dev['pin'], GPIO.IN)
-            GPIO.output(dev[key]['pin'], dev['default'])
+            GPIO.setup(dev['gpio'], GPIO.IN)
+            GPIO.output(dev[key]['gpio'], dev['default'])
 
         elif dev['mode']=='opendrain':
             if dev['default'] == 1:
-                 GPIO.setup(dev['pin'], GPIO.OUT)
-                 GPIO.output(dev['pin'], 0)
+                 GPIO.setup(dev['gpio'], GPIO.OUT)
+                 GPIO.output(dev['gpio'], 0)
             elif dev['default'] == 0:
-                GPIO.setup(dev['pin'], GPIO.IN)
+                GPIO.setup(dev['gpio'], GPIO.IN)
         
     return 0
 
+GPIO.cleanup()
+GPIO.setmode(GPIO.BCM) 
 init_gpio()
 
 motors = MotorKit(i2c=board.I2C())
@@ -73,15 +73,15 @@ def set_gpio(item, value):
     for key in settings['gpio']:
         dev = settings['gpio'][key]
         if key==item and dev['mode'] == "out":
-            GPIO.output(dev['pin'], value)
+            GPIO.output(dev['gpio'], value)
             dev['current'] = value
             save()
             return 0
         elif key==item and dev['mode'] == "opendrain":
             if value == 1:
-                 GPIO.setup(dev['pin'], GPIO.OUT) 
+                 GPIO.setup(dev['gpio'], GPIO.OUT) 
             elif value == 0:
-                GPIO.setup(dev['pin'], GPIO.IN)
+                GPIO.setup(dev['gpio'], GPIO.IN)
 
             save()
             return 0
