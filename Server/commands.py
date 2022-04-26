@@ -411,5 +411,5 @@ def parse(user_input):
 def save():
     global settings
     with open('settings.json', 'w') as f:        
-        f.write(json.dumps(settings))
+        f.write(json.dumps(settings), indent=4)
         f.close()
