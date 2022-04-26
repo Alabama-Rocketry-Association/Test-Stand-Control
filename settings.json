@@ -43,7 +43,7 @@
             "pin":35,
             "gpio":19,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "ventlox": 
@@ -51,7 +51,7 @@
             "pin":16,
             "gpio":23,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "ventker": 
@@ -59,7 +59,7 @@
             "pin":15,
             "gpio":22,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "mainlox": 
@@ -67,7 +67,7 @@
             "pin":38,
             "gpio":20,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "mainker": 
@@ -75,7 +75,7 @@
             "pin":36,
             "gpio":16,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "press_2way": 
@@ -83,7 +83,7 @@
             "pin":22,
             "gpio":25,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "ventlox_2way": 
@@ -91,7 +91,7 @@
             "pin":18,
             "gpio":24,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "ventker_2way": 
@@ -99,7 +99,7 @@
             "pin":29,
             "gpio":5,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "mainlox_2way": 
@@ -107,7 +107,7 @@
             "pin":32,
             "gpio":12,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         },
         "mainker_2way": 
@@ -115,7 +115,7 @@
             "pin":31,
             "gpio":6,
             "mode":"opendrain",
-            "default":1,
+            "default":0,
             "current":0
         }
     }

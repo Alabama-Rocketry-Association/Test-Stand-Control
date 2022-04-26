@@ -79,7 +79,7 @@ def set_gpio(item, value):
             return 0
         elif key==item and dev['mode'] == "opendrain":
             if value == 1:
-                 GPIO.setup(dev['gpio'], GPIO.OUT) 
+                GPIO.setup(dev['gpio'], GPIO.OUT) 
             elif value == 0:
                 GPIO.setup(dev['gpio'], GPIO.IN)
 
@@ -88,16 +88,16 @@ def set_gpio(item, value):
     return 1
 
 # Open the corresponding valve by setting the GPIO to low
-def open(valve):
-    if set_gpio(valve, 0) == 0:
+def open_valve(valve):
+    if set_gpio(valve, 1) == 0:
         msg.tell("Opened %s" % valve)
         return 0
     msg.tell("%s does not exist, operation cancelled" % valve)
     return 0
 
 # Close the corresponding valve by setting the GPIO to high
-def close(valve):
-    if set_gpio(valve, 1) == 0:
+def close_valve(valve):
+    if set_gpio(valve, 0) == 0:
         msg.tell("Closed %s" % valve)
         return 0
     msg.tell("%s does not exist, operation cancelled" % valve)
@@ -106,14 +106,14 @@ def close(valve):
 # Enable the 2ways or the ignitor
 def enable(item):
     if item=='2way' or item=='twoway':
-        open('press_2way')
-        open('ventlox_2way')
-        open('ventker_2way')
-        open('mainlox_2way')
-        open('mainker_2way')
+        open_valve('press_2way')
+        open_valve('ventlox_2way')
+        open_valve('ventker_2way')
+        open_valve('mainlox_2way')
+        open_valve('mainker_2way')
         return 0
     elif item=='ignition' or item=='ignitor' or item=='igniter':
-        open('ignition')
+        open_valve('ignition')
         return 0
     msg.tell("%s does not exist, operation cancelled" % item)
     return 0
@@ -121,14 +121,14 @@ def enable(item):
 # Disable the 2ways or the ignitor
 def disable(item):
     if item=='2way' or item=='twoway':
-        close('press_2way')
-        close('ventlox_2way')
-        close('ventker_2way')
-        close('mainlox_2way')
-        close('mainker_2way')
+        close_valve('press_2way')
+        close_valve('ventlox_2way')
+        close_valve('ventker_2way')
+        close_valve('mainlox_2way')
+        close_valve('mainker_2way')
         return 0
     elif item=='ignition' or item=='ignitor' or item=='igniter':
-        close('ignition')
+        close_valve('ignition')
         return 0
     msg.tell("%s does not exist, operation cancelled" % item)
     return 0
@@ -344,8 +344,8 @@ commands = {
     "lox_psi": [lox_psi, 2],
     "ker_psi": [ker_psi, 2],
 
-    "open": [open, 2],
-    "close": [close, 2],
+    "open": [open_valve, 2],
+    "close": [close_valve, 2],
 
     "enable": [enable, 2],
     "disable": [disable, 2],
@@ -390,8 +390,9 @@ def exe(user_command):
         a = method(*user_args)
         msg.cmd_ready()
         return a
-    except:
-        msg.tell("An error has occured")
+    except Exception as e:
+        msg.tell("An error has occured:")
+        msg.tell(str(e))
         msg.cmd_ready()
         return 1
 
@@ -409,6 +410,6 @@ def parse(user_input):
 # Save current settings dictionary to file
 def save():
     global settings
-    with open('settings.json', 'w') as f:
+    with open('settings.json', 'w') as f:        
         f.write(json.dumps(settings))
         f.close()
