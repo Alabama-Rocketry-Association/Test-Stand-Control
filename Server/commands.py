@@ -133,6 +133,23 @@ def disable(item):
     msg.tell("%s does not exist, operation cancelled" % item)
     return 0
 
+# sequence of valve actuations for hotfire
+def fire():
+    open_valve('mainker')
+    time.sleep(0.2)
+    open_valve('mainlox')
+    msg.tell('f i r e')
+    return 0
+
+# sequence of valve actuations for abort
+def abort():
+    close_valve('press')
+    open_valve('ventlox')
+    open_valve('ventker')
+    msg.tell('Aborted')
+    return 0
+
+
 # Convert a number of steps on the motor to the number of corresponding degrees
 def get_degrees(steps):
     global settings
@@ -287,6 +304,9 @@ def help():
     enable [item]: enables the corresponding item
     disable [item]: disables the corresponding item
 
+    a: abort the current sequence
+    fire: begin the h o t f i r e
+
     lox_motor_pos: return angular offset of lox motor
     ker_motor_pos: return angular offset of ker motor
 
@@ -349,6 +369,11 @@ commands = {
 
     "enable": [enable, 2],
     "disable": [disable, 2],
+
+    "abort": [abort, 1],
+    "a": [abort, 1],
+    
+    "fire": [fire, 1],
 
     "lox_motor_pos": [lox_motor_pos, 1],
     "ker_motor_pos": [ker_motor_pos, 1],
