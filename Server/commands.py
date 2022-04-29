@@ -5,6 +5,7 @@ import message as msg
 import time
 import os
 import json
+import threading
 
 import RPi.GPIO as GPIO
 import board
@@ -139,6 +140,8 @@ def disable(item):
 # Ignites, and then prompts for hotfire or abort
 def ignite():
     enable('ignitor')
+    '''
+    enable('ignitor')
     input = msg.demand("enter '↵' to fire, 'a' to abort, 's' to stop")
     if input == '':
         fire()
@@ -148,7 +151,7 @@ def ignite():
         disable('ignitor')
         abort()
     else:
-        disable('ignitor')
+        disable('ignitor')'''
 
 # sequence of valve actuations for hotfire
 def fire():
@@ -156,7 +159,29 @@ def fire():
     time.sleep(0.5)
     open_valve('mainker')
     msg.tell('f i r e')
+    time.sleep(2)
+    disable('ignitor')
     return 0
+
+# performs a hotfire, with user input
+# upon ignitor confirmation
+def hotfire():
+    a = threading.Timer(6, ignite)
+    a.start()
+    b = threading.Timer(10, fire)
+    b.start()
+    msg.tell('''Igniting in 6 seconds\n
+    enter 'a' to abort, '↵' to pause''')
+    open_valve('press')
+    input = msg.demand()
+    if input=='a':
+        disable('ignitor')
+        b.cancel()
+        abort()
+    else:
+        b.cancel()
+        disable('ignitor')
+
 
 # sequence of valve actuations for abort
 def abort():
@@ -322,7 +347,8 @@ def help():
     disable [item]: disables the corresponding item
 
     a: abort the current sequence
-    fire: begin the h o t f i r e
+    fire: manually fire
+    hotfire: full hotfire sequence
 
     lox_motor_pos: return angular offset of lox motor
     ker_motor_pos: return angular offset of ker motor
@@ -391,6 +417,7 @@ commands = {
     "a": [abort, 1],
     
     "fire": [fire, 1],
+    "hotfire": [hotfire, 1],
 
     "lox_motor_pos": [lox_motor_pos, 1],
     "ker_motor_pos": [ker_motor_pos, 1],

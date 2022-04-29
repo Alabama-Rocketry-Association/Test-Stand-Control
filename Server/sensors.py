@@ -35,7 +35,7 @@ conv_linear = {
     Data.LOX_PSI: [0.0006875, 10070],
     Data.KER_PSI: [0.0006875, 10070],
     Data.PRES_PSI: [0.0006875, 100700],
-    Data.THRUST: [0, 1],
+    Data.THRUST: [0, 5150000],
 
 }
 
