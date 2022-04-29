@@ -155,6 +155,8 @@ def ignite():
 
 # sequence of valve actuations for hotfire
 def fire():
+    global ready_for_fire
+    ready_for_fire.wait()
     open_valve('loxmain')
     time.sleep(0.5)
     open_valve('kermain')
@@ -163,23 +165,32 @@ def fire():
     disable('ignitor')
     return 0
 
+ready_for_fire = threading.Event()
+ready_for_fire.clear()
+def ready():
+    ready_for_fire.set()
+
 # performs a hotfire, with user input
 # upon ignitor confirmation
 def hotfire():
+    global ready_for_fire
     a = threading.Timer(6, ignite)
     a.start()
-    b = threading.Timer(10, fire)
+    b = threading.Timer(10, ready_for_fire)
     b.start()
     open_valve('press')
-    input = msg.demand('''Igniting in 6 seconds\n
-    enter 'a' to abort, '↵' to pause''')
+    input = msg.demand('''Igniting in 6 seconds, enter 'a' to abort, '↵' to fire, 's' to stop''')
     if input=='a':
         disable('ignitor')
         b.cancel()
         abort()
+    elif input=='':
+        fire()
+        msg.tell('prepare yourself...')
     else:
         b.cancel()
         disable('ignitor')
+        msg.tell('stopped hotfire')
 
 
 # sequence of valve actuations for abort
