@@ -5,6 +5,8 @@ from datetime import datetime
 from enum import Enum
 import threading
 
+from ADCDifferentialPi import ADCDifferentialPi
+
 __author__ = "Aidan Cantu"
 
 
