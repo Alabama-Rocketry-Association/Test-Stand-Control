@@ -18,7 +18,10 @@ __author__ = "Aidan Cantu"
 LAST_COMMAND = []
 
 # load data from JSON file
-
+# load data from JSON file
+with open('settings.json') as f:
+    settings = json.load(f)
+    f.close()
 
 # initialize GPIO
 def init_gpio():
