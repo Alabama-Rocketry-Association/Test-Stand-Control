@@ -5,10 +5,6 @@ from datetime import datetime
 from enum import Enum
 import threading
 
-from ADCDifferentialPi import ADCDifferentialPi
-from Phidget22.Phidget import *
-from Phidget22.Devices.VoltageRatioInput import *
-
 __author__ = "Aidan Cantu"
 
 
@@ -24,11 +20,6 @@ ADC_GAIN = 8
 
 adc = ADCDifferentialPi(ADC_ADDR_ONE, ADC_ADDR_TWO, ADC_BITRATE)
 adc.set_pga(8)
-
-ch = VoltageRatioInput()
-ch.openWaitForAttachment(1000)
-ch.setDataRate(20)
-ch.setBridgeEnabled(True)
 
 class Data(Enum):
     LOX_PSI = 1
@@ -79,7 +70,7 @@ def read_voltage(data):
     elif data == Data.PRES_PSI:
         a = adc.read_voltage(3)
     elif data == Data.THRUST:
-        a = ch.getVoltageRatio()
+        a = adc.read_voltage(8)
     else:
         a = 0
     SENSORS_AVAILABLE.set()
