@@ -155,9 +155,9 @@ def ignite():
 
 # sequence of valve actuations for hotfire
 def fire():
-    open_valve('mainlox')
+    open_valve('loxmain')
     time.sleep(0.5)
-    open_valve('mainker')
+    open_valve('kermain')
     msg.tell('f i r e')
     time.sleep(2)
     disable('ignitor')
@@ -170,10 +170,9 @@ def hotfire():
     a.start()
     b = threading.Timer(10, fire)
     b.start()
-    msg.tell('''Igniting in 6 seconds\n
-    enter 'a' to abort, '↵' to pause''')
     open_valve('press')
-    input = msg.demand()
+    input = msg.demand('''Igniting in 6 seconds\n
+    enter 'a' to abort, '↵' to pause''')
     if input=='a':
         disable('ignitor')
         b.cancel()
