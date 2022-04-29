@@ -1,7 +1,7 @@
 {
     
     "lox_reg": {
-        "step_offset": 98333,
+        "step_offset": 124444,
         "gear_ratio": 100,
         "step_size": 1.8,
         "conversion": [
@@ -10,7 +10,7 @@
         ]
     },
     "ker_reg": {
-        "step_offset": 98334,
+        "step_offset": 119722,
         "gear_ratio": 100,
         "step_size": 1.8,
         "conversion": [
@@ -46,7 +46,7 @@
             "default":0,
             "current":0
         },
-        "ventlox": 
+        "loxvent": 
         {
             "pin":16,
             "gpio":23,
@@ -54,7 +54,7 @@
             "default":0,
             "current":0
         },
-        "ventker": 
+        "kervent": 
         {
             "pin":15,
             "gpio":22,
@@ -62,7 +62,7 @@
             "default":0,
             "current":0
         },
-        "mainlox": 
+        "loxmain": 
         {
             "pin":38,
             "gpio":20,
@@ -70,7 +70,7 @@
             "default":0,
             "current":0
         },
-        "mainker": 
+        "kermain": 
         {
             "pin":36,
             "gpio":16,
@@ -86,7 +86,7 @@
             "default":0,
             "current":0
         },
-        "ventlox_2way": 
+        "loxvent_2way": 
         {
             "pin":18,
             "gpio":24,
@@ -94,7 +94,7 @@
             "default":0,
             "current":0
         },
-        "ventker_2way": 
+        "kervent_2way": 
         {
             "pin":29,
             "gpio":5,
@@ -102,7 +102,7 @@
             "default":0,
             "current":0
         },
-        "mainlox_2way": 
+        "loxmain_2way": 
         {
             "pin":32,
             "gpio":12,
@@ -110,10 +110,18 @@
             "default":0,
             "current":0
         },
-        "mainker_2way": 
+        "kermain_2way": 
         {
             "pin":31,
             "gpio":6,
+            "mode":"opendrain",
+            "default":0,
+            "current":0
+        },
+        "ignition":
+        {
+            "pin":7,
+            "gpio":4,
             "mode":"opendrain",
             "default":0,
             "current":0

@@ -88,6 +88,7 @@ def set_gpio(item, value):
     return 1
 
 # Open the corresponding valve by setting the GPIO to low
+# low GPIO closes relay
 def open_valve(valve):
     if set_gpio(valve, 1) == 0:
         msg.tell("Opened %s" % valve)
@@ -96,6 +97,7 @@ def open_valve(valve):
     return 0
 
 # Close the corresponding valve by setting the GPIO to high
+# high GPIO closes relay
 def close_valve(valve):
     if set_gpio(valve, 0) == 0:
         msg.tell("Closed %s" % valve)
@@ -107,10 +109,10 @@ def close_valve(valve):
 def enable(item):
     if item=='2way' or item=='twoway':
         open_valve('press_2way')
-        open_valve('ventlox_2way')
-        open_valve('ventker_2way')
-        open_valve('mainlox_2way')
-        open_valve('mainker_2way')
+        open_valve('loxvent_2way')
+        open_valve('kervent_2way')
+        open_valve('loxmain_2way')
+        open_valve('kermain_2way')
         return 0
     elif item=='ignition' or item=='ignitor' or item=='igniter':
         open_valve('ignition')
@@ -122,10 +124,10 @@ def enable(item):
 def disable(item):
     if item=='2way' or item=='twoway':
         close_valve('press_2way')
-        close_valve('ventlox_2way')
-        close_valve('ventker_2way')
-        close_valve('mainlox_2way')
-        close_valve('mainker_2way')
+        close_valve('loxvent_2way')
+        close_valve('kervent_2way')
+        close_valve('loxmain_2way')
+        close_valve('kermain_2way')
         return 0
     elif item=='ignition' or item=='ignitor' or item=='igniter':
         close_valve('ignition')
@@ -133,11 +135,25 @@ def disable(item):
     msg.tell("%s does not exist, operation cancelled" % item)
     return 0
 
+# Ignites, and then prompts for hotfire or abort
+def ignite():
+    enable('ignitor')
+    input = msg.demand("enter '↵' to fire, 'a' to abort, 's' to stop")
+    if input == '':
+        fire()
+        time.sleep(2)
+        disable('ignitor')
+    elif input == 'a':
+        disable('ignitor')
+        abort()
+    else:
+        disable('ignitor')
+
 # sequence of valve actuations for hotfire
 def fire():
-    open_valve('mainker')
-    time.sleep(0.2)
     open_valve('mainlox')
+    time.sleep(0.5)
+    open_valve('mainker')
     msg.tell('f i r e')
     return 0
 

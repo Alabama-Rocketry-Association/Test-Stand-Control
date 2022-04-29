@@ -33,7 +33,7 @@ python3 GUI\ files/host.py
 ## Usage
 The local computer will be able to send commands to the controller. The connection can be tested with `ping`, and a list of all commands can be displayed with `help`
 
-Some commands require parameters, which should be separated with a space. For example, `lox_inc 50` will turn the lox motor clockwise 50 degrees.
+Some commands require parameters, which should be separated with a space. For example, `lox_inc 50` will turn the LOX pressure regulator knob clockwise 50 degrees.
 
 If the connection between the computers is broken, the programs will automatically reconnect when/if the connection is restored, and the current state of the system is saved.
 
@@ -54,6 +54,7 @@ wifis:
       "My-Guest-Wifi": {}
       "My-Home-Wifi":
         password: "myHomeWifiPassword"
+      dhcp4: yes
 ```
 
 After formatting, insert the SD card into the pi and boot it. We will need to connect to the pi over SSH in order to make software configurations. Directly connect an ethernet cable between your personal computer and the Raspberry Pi. In your network configurations, create a new ethernet configuration with a static IP address of `10.0.0.x/24`, where `x` is any number between 2 and 255.
@@ -70,7 +71,8 @@ Upon sucessful connection, you will have shell access to the Raspberry Pi. If wi
 sudo nano /etc/netplan/50-cloud-init.yaml
 ```
 
-Next, update the system, and install all the necessary libraries:
+Next, disable auto-updating, and manually updatae and install all the necessary libraries:
 ```
+sudo dpkg-reconfigure unattended-upgrades
 sudo apt-get update && sudo apt-get upgrade
 ```
