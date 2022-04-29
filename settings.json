@@ -36,6 +36,12 @@
             10070
         ]
     },
+    "thrust_n":{
+        "conversion":[
+            0,
+            1
+        ]
+    },
     "gpio":
     {
         "press": 

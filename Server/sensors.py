@@ -6,8 +6,11 @@ from enum import Enum
 import threading
 
 from ADCDifferentialPi import ADCDifferentialPi
+from Phidget22.Phidget import *
+from Phidget22.Devices.VoltageRatioInput import *
 
 __author__ = "Aidan Cantu"
+
 
 # Global variable indicating if reading sensor data
 SENSORS_AVAILABLE = threading.Event()
@@ -22,17 +25,25 @@ ADC_GAIN = 8
 adc = ADCDifferentialPi(ADC_ADDR_ONE, ADC_ADDR_TWO, ADC_BITRATE)
 adc.set_pga(8)
 
+ch = VoltageRatioInput()
+ch.openWaitForAttachment(1000)
+ch.setDataRate(20)
+ch.setBridgeEnabled(True)
+
 class Data(Enum):
     LOX_PSI = 1
     KER_PSI = 2
     PRES_PSI = 3
+    THRUST = 4
 
 #Calibration for a + bx voltage/data translation
 #First value is y-int, second is slope
 conv_linear = {
     Data.LOX_PSI: [0.0006875, 10070],
     Data.KER_PSI: [0.0006875, 10070],
-    Data.PRES_PSI: [0.0006875, 100700]
+    Data.PRES_PSI: [0.0006875, 100700],
+    Data.THRUST: [0, 1],
+
 }
 
 def read(data):
@@ -67,6 +78,8 @@ def read_voltage(data):
         a = adc.read_voltage(4)
     elif data == Data.PRES_PSI:
         a = adc.read_voltage(3)
+    elif data == Data.THRUST:
+        a = ch.getVoltageRatio()
     else:
         a = 0
     SENSORS_AVAILABLE.set()
